@@ -1,0 +1,24 @@
+{
+  "name": "meta-ads-copilot",
+  "displayName": "Meta Ads Copilot",
+  "description": "AI ad manager — daily checks, bleeders, winners, fatigue detection, budget recommendations",
+  "version": "1.0.0",
+  "author": "@themattberman",
+  "skills": [
+    "meta-ads",
+    "ad-creative-monitor",
+    "budget-optimizer"
+  ],
+  "requiredEnv": [],
+  "optionalEnv": [
+    "META_AD_ACCOUNT"
+  ],
+  "tags": [
+    "meta-ads",
+    "facebook-ads",
+    "instagram-ads",
+    "ad-management",
+    "marketing",
+    "paid-media"
+  ]
+}

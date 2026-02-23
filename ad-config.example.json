@@ -1,0 +1,23 @@
+{
+  "account": {
+    "id": "act_123456789",
+    "name": "My Brand"
+  },
+  "benchmarks": {
+    "target_cpa": 25.00,
+    "target_roas": 3.0,
+    "max_frequency": 3.5,
+    "min_ctr": 1.0,
+    "max_cpc": 2.50
+  },
+  "alerts": {
+    "bleeder_ctr_threshold": 1.0,
+    "bleeder_frequency_threshold": 3.5,
+    "fatigue_ctr_drop_pct": 20,
+    "spend_pace_alert_pct": 15
+  },
+  "reporting": {
+    "default_preset": "last_7d",
+    "timezone": "America/New_York"
+  }
+}
