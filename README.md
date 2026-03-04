@@ -19,9 +19,10 @@ This kit automates your entire Meta Ads workflow:
 - **Detect fatigue** — CTR declining, frequency climbing, CPC rising
 - **Generate copy** — AI writes ad copy matched to your actual image creatives
 - **Upload to Meta** — Push new ads straight to your account via Graph API
+- **Pixel + CAPI audit** — Audit your tracking setup, test server-side events, optimize for 9.3+ Event Match Quality
 - **Take action** — Pause, resume, adjust budgets (always with your approval)
 
-The result: A full ad management loop — from monitoring to creative refresh — without opening Ads Manager.
+The result: A full ad management loop -- from monitoring to creative refresh to tracking optimization -- without opening Ads Manager.
 
 ---
 
@@ -95,7 +96,8 @@ openclaw start
 | `ad-creative-monitor` | Track creative performance over time, detect fatigue before it kills your ROAS |
 | `budget-optimizer` | Analyze spend efficiency, recommend budget shifts between campaigns/adsets |
 | `ad-copy-generator` | Generate ad copy matched to specific image creatives — analyzes the visual, writes copy that reinforces it, outputs `asset_feed_spec`-ready variants |
-| `ad-upload` | Push images and copy straight to Meta via Graph API — no Ads Manager copy-paste required |
+| `ad-upload` | Push images and copy straight to Meta via Graph API -- no Ads Manager copy-paste required |
+| `pixel-capi` | Audit Meta Pixel + Conversions API setup, test server-side events, optimize Event Match Quality to 9.3+. Platform guides for Next.js, Shopify, WordPress, Webflow, GHL, ClickFunnels |
 
 Each skill can run standalone or as part of the daily routine.
 
@@ -106,6 +108,8 @@ The five skills chain together into a closed loop:
 ```
 Monitor (meta-ads) → Detect fatigue (ad-creative-monitor) → Shift budget (budget-optimizer)
     → Generate new copy (ad-copy-generator) → Upload to Meta (ad-upload) → Monitor again
+
+Pixel + CAPI (pixel-capi) runs alongside: audit tracking, test server events, optimize EMQ
 ```
 
 No Ads Manager required at any step.
@@ -240,7 +244,10 @@ meta-ads-kit/
 │   ├── ad-creative-monitor/  # Creative fatigue tracking
 │   ├── budget-optimizer/     # Spend efficiency analysis
 │   ├── ad-copy-generator/    # AI copy matched to image creatives
-│   └── ad-upload/            # Push ads to Meta via Graph API
+│   ├── ad-upload/            # Push ads to Meta via Graph API
+│   └── pixel-capi/           # Pixel + CAPI audit, testing, EMQ optimization
+│       ├── scripts/          # pixel-audit, pixel-setup, capi-test, capi-send, emq-check
+│       └── references/       # Complete pixel + CAPI knowledge base
 ├── SOUL.md                # Agent personality (for OpenClaw)
 ├── AGENTS.md              # Agent instructions
 └── SPEC.md                # Full system spec
