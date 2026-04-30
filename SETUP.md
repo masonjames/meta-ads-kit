@@ -25,7 +25,7 @@ meta-ads auth status
 meta-ads -o json ads adaccount list
 
 # 3) This kit
-git clone https://github.com/themattberman/meta-ads-kit.git
+git clone https://github.com/masonjames/meta-ads-kit.git
 cd meta-ads-kit
 cp .env.example .env
 cp ad-config.example.json ad-config.json

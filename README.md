@@ -213,7 +213,7 @@ Your Meta ad spend is separate — this kit just helps you manage it smarter.
 
 MIT License. Use it, fork it, build on it.
 
-Original source by [Matt Berman](https://twitter.com/themattberman).
+Original source for OpenClaw by [Matt Berman](https://twitter.com/themattberman).
 
 ---
 
