@@ -2,11 +2,12 @@
 
 An open-source AI ad manager that replaces 20 minutes of Ads Manager clicking with a 2-minute summary over coffee.
 
-A standalone multi-file **Hermes Agent** skill pack for Meta ads monitoring, creative fatigue detection, budget recommendations, copy generation, ad upload workflows, and Pixel/CAPI audits.
+A standalone multi-file **Hermes Agent** skill pack for Meta ads monitoring, creative fatigue detection, budget recommendations, copy generation, ad upload workflows, and Pixel/CAPI audits via the Ads API or MCP.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Hermes Agent](https://img.shields.io/badge/Works%20with-Hermes%20Agent-blue)](https://github.com/NOETIC-AGI/hermes-agent)
-
+[![Meta Ads AI Connector - MCP](https://www.facebook.com/business/help/1456422242197840)]
+[![Meta Ads CLI](https://developers.facebook.com/documentation/ads-commerce/ads-ai-connectors/ads-cli/setup/get-started)]
 ---
 
 **Monitor → Detect Fatigue → Find Winners → Shift Budget → Generate Copy → Upload to Meta → Repeat**
@@ -28,9 +29,7 @@ The result: a full ad management loop without opening Ads Manager for every chec
 
 ## Why This Exists
 
-I've spent 20 years in marketing. Scaled Fireball Whisky from one state to a billion-dollar global brand. Ran campaigns for Heineken, Hennessy, Buffalo Trace. Now I run [Emerald Digital](https://emerald.digital), an AI-first marketing agency.
-
-Here's what I learned: 90% of ad management is pattern recognition. Spend trending up or down. CTR declining. CPA spiking. Winners emerging. Losers bleeding.
+90% of ad management is pattern recognition. Spend trending up or down. CTR declining. CPA spiking. Winners emerging. Losers bleeding.
 
 You don't need to stare at Ads Manager to spot these patterns. An AI agent can do it and tell you what matters.
 
@@ -198,11 +197,7 @@ PRs welcome. Useful directions include Google Ads support, creative performance 
 
 MIT License. Use it, fork it, build on it.
 
-Built by [Matt Berman](https://twitter.com/themattberman).
-
-- 🐦 Twitter/X: [@themattberman](https://twitter.com/themattberman)
-- 📰 Newsletter: [Big Players](https://bigplayers.co)
-- 🏢 Agency: [Emerald Digital](https://emerald.digital)
+Original source by [Matt Berman](https://twitter.com/themattberman).
 
 ---
 

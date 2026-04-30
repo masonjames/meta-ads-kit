@@ -6,7 +6,15 @@ Get your Hermes-powered AI ad manager running in 10 minutes.
 
 ## Step 1: Install and Verify `meta-ads`
 
-This kit uses the installed `meta-ads` CLI for Meta Ads reporting. Docs prefer the `meta-ads` command, not any symlink.
+This kit uses the installed `meta-ads` CLI for Meta Ads or Meta Ads MCP for reporting. Docs prefer the `meta-ads` command, not any symlink.
+
+For MCP use the followiing URL for ads MCP server across all currently supported AI agents is:
+
+https://mcp.facebook.com/ads
+
+You should be prompted to log into facebook ads with your uer credentials. See Facebook information here: https://www.facebook.com/business/help/1456422242197840
+
+For the meta ads CLI, refer to thee documentation here: https://developers.facebook.com/documentation/ads-commerce/ads-ai-connectors/ads-cli/setup/get-started
 
 ```bash
 meta-ads auth status
