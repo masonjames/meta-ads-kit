@@ -293,5 +293,5 @@ When the user asks about:
 ## Next Up
 
 - **`/meta-ads`** -- Campaign performance. Pair with good signal = better optimization.
-- **`/ga4-report`** -- See what tracked traffic actually does on-site.
-- **`/analytics-tracking`** -- Full analytics stack including GA4 event tracking.
+- **GA4 reporting** -- Optional external analytics capability for seeing what tracked traffic does on-site.
+- **Analytics tracking** -- Optional external capability for a fuller analytics stack, including GA4 event tracking.

@@ -275,7 +275,9 @@ When running daily-check, frame the output around these questions:
 
 ## Next Up
 
-- **`/ga4-report`** — See what Meta traffic actually does on your site. Pair with ads data to find true ROAS.
-- **`/gsc-report`** — Cross-reference paid vs organic. Are you paying for traffic you'd get free?
-- **`/creative`** — Generate new ad creatives when fatigue hits. Feed winning patterns into new concepts.
-- **`/direct-response-copy`** — Write ad copy based on what's actually converting.
+Optional adjacent capabilities if you have them installed:
+
+- **GA4 reporting** — See what Meta traffic actually does on your site. Pair with ads data to find true ROAS.
+- **GSC reporting** — Cross-reference paid vs organic. Are you paying for traffic you'd get free?
+- **Creative generation** — Generate new ad creatives when fatigue hits. Feed winning patterns into new concepts.
+- **Direct-response copywriting** — Write ad copy based on what's actually converting.

@@ -92,15 +92,15 @@ Show the user what you found: "Your top 3 ads all open with a specific number an
 
 ### Step 2: Load Brand Context
 
-Read the client's CLAUDE.md, brand profile, or ask inline:
+Read the client's brand docs, campaign brief, workspace brand context, or ask inline:
 
 | Need | Where | Fallback |
 |------|-------|----------|
-| ICP | `audience.md` or CLAUDE.md | Ask: "Who's this for?" |
-| Voice | `voice-profile.md` | Ask: "Any words to avoid? Tone preference?" |
-| Pain points | `audience.md` | Extract from top-performing copy |
-| Key stats | Brand brief / CLAUDE.md | Ask: "What proof points can I use?" |
-| Forbidden words | `voice-profile.md` | Default ban list (see below) |
+| ICP | `workspace/brand/audience.md` or campaign brief | Ask: "Who's this for?" |
+| Voice | `workspace/brand/voice-profile.md` | Ask: "Any words to avoid? Tone preference?" |
+| Pain points | `workspace/brand/audience.md` or `workspace/brand/learnings.md` | Extract from top-performing copy |
+| Key stats | Brand brief, campaign brief, or `workspace/brand/positioning.md` | Ask: "What proof points can I use?" |
+| Forbidden words | `workspace/brand/voice-profile.md` | Default ban list (see below) |
 
 **Default forbidden words** (always banned unless brand explicitly uses them):
 revolutionary, game-changer, cutting-edge, innovative solution, transform your business, unlock your potential, unleash, harness the power, leverage (as verb), next-level, best-in-class, world-class, seamless, robust, synergy

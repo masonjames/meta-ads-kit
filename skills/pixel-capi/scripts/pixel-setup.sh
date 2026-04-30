@@ -496,7 +496,7 @@ STEP 3 -- Set up n8n webhook to send CAPI
 
 COMMON GOTCHAS:
 - Webflow sites can't run server code -- always route CAPI through an external service
-- Use n8n self-hosted (Emerald's n8n) or Zapier/Make for the webhook handler
+- Use self-hosted n8n, Zapier, or Make for the webhook handler
 - IP must be read server-side from request headers -- client-side IP is unreliable
 
 EOF

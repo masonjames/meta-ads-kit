@@ -824,7 +824,7 @@ Webflow is entirely client-side from a pixel/CAPI perspective. You cannot run se
 **Pixel:** Add to Site Settings > Custom Code > Head Code (fires on all pages).
 
 **CAPI:** Requires an external webhook handler. Options:
-- n8n self-hosted (best for Emerald clients -- use Emerald's n8n instance)
+- Self-hosted n8n for full control over webhook handling
 - Make (Integromat)
 - Zapier (premium tier for custom webhooks)
 - Your own server endpoint
