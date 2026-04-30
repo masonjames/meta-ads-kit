@@ -208,17 +208,17 @@ Beyond reporting, `meta-ads` can take action. These are for the "AI ad manager" 
 
 ### Pause a bleeder
 ```bash
-meta-ads ads ad pause AD_ID
+meta-ads ads ad update AD_ID --status paused
 ```
 
 ### Resume a winner
 ```bash
-meta-ads ads ad resume AD_ID
+meta-ads ads ad update AD_ID --status active
 ```
 
 ### Shift budget
 ```bash
-meta-ads ads adset budget set ADSET_ID --daily-budget 5000  # in cents
+meta-ads ads adset update ADSET_ID --daily-budget 5000  # in cents
 ```
 
 **Safety:** All mutating actions are high-risk and require confirmation. The skill should ALWAYS present findings and recommendations first, then ask for explicit approval before taking action.
