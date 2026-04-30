@@ -2,10 +2,10 @@
 
 An open-source AI ad manager that replaces 20 minutes of Ads Manager clicking with a 2-minute summary over coffee.
 
-Built with [OpenClaw](https://openclaw.ai) — the AI agent framework.
+A standalone multi-file **Hermes Agent** skill pack for Meta ads monitoring, creative fatigue detection, budget recommendations, copy generation, ad upload workflows, and Pixel/CAPI audits.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![OpenClaw](https://img.shields.io/badge/Built%20with-OpenClaw-blue)](https://openclaw.ai)
+[![Hermes Agent](https://img.shields.io/badge/Works%20with-Hermes%20Agent-blue)](https://github.com/NOETIC-AGI/hermes-agent)
 
 ---
 
@@ -61,6 +61,30 @@ cp ad-config.example.json ad-config.json
 # Edit ad-config.json with your benchmarks
 ```
 
+Install Hermes Agent if you do not already have it, then install the skills by copying the **full skill directories**:
+
+```bash
+# Install Hermes Agent and complete first-time setup
+pip install hermes-agent
+hermes setup
+
+# Install/copy every skill directory, including bundled scripts/ and references/
+mkdir -p ~/.hermes/skills/marketing
+cp -R skills/* ~/.hermes/skills/marketing/
+
+# Confirm Hermes can see all six Meta Ads Copilot skills
+hermes skills list
+```
+
+You should see:
+
+- `meta-ads`
+- `ad-creative-monitor`
+- `budget-optimizer`
+- `ad-copy-generator`
+- `ad-upload`
+- `pixel-capi`
+
 See [SETUP.md](SETUP.md) for detailed instructions.
 
 ---
@@ -78,12 +102,11 @@ The core of the system. Five questions that replace Ads Manager:
 | 5 | Any fatigue? | CTR trends, frequency, CPC movement |
 
 ```bash
-# Run all 5 questions
+# Run all 5 questions locally
 ./run.sh daily-check
 
-# Or with OpenClaw agent
-openclaw start
-# Then message: "Daily ads check"
+# Or run through Hermes Agent from this repo root
+hermes chat --toolsets skills,terminal -q "/meta-ads Daily ads check"
 ```
 
 ---
@@ -99,11 +122,11 @@ openclaw start
 | `ad-upload` | Push images and copy straight to Meta via Graph API -- no Ads Manager copy-paste required |
 | `pixel-capi` | Audit Meta Pixel + Conversions API setup, test server-side events, optimize Event Match Quality to 9.3+. Platform guides for Next.js, Shopify, WordPress, Webflow, GHL, ClickFunnels |
 
-Each skill can run standalone or as part of the daily routine.
+This is a standalone multi-file Hermes skill pack. Copy the full folders under `skills/` into a Hermes skills path; do not copy only `SKILL.md`, because several skills need their bundled `scripts/` and `references/` files.
 
 ### The Full Loop
 
-The five skills chain together into a closed loop:
+The six skills chain together into a closed loop:
 
 ```
 Monitor (meta-ads) → Detect fatigue (ad-creative-monitor) → Shift budget (budget-optimizer)
@@ -130,56 +153,74 @@ No Ads Manager required at any step.
  7-day trends        Fatigue 😴          Cap losers         asset_feed_spec      Image + copy
 ```
 
-**Morning (automated via cron):**
+**Morning briefing (read-only via Hermes cron):**
 1. Run daily-check — flag bleeders, winners, and fatigue
-2. Send strategist-level briefing to Slack/Telegram with recommendations and new creative concepts
-3. You approve from your phone
+2. Send strategist-level briefing with recommendations and new creative concepts
+3. Save spend-affecting decisions for an interactive Hermes session where you can approve them
 
 **When you need new creatives:**
 1. Generate copy matched to specific image creatives
 2. Review the variants
-3. Upload directly to Meta — images, copy, and all
+3. Upload directly to Meta — images, copy, and all — only after approval
 
 **You (2 minutes over coffee):**
 1. Read the summary
-2. Approve/reject recommendations
+2. Approve/reject recommendations in an interactive session
 3. Done.
 
 ---
 
-## Running With OpenClaw
+## Running With Hermes Agent
 
-This kit is built for [OpenClaw](https://openclaw.ai), an open-source AI agent framework.
+Install Hermes Agent, then copy this pack's full skill directories into a Hermes skills path:
 
 ```bash
-# Install OpenClaw
-npm install -g openclaw
+# Install Hermes Agent and complete first-time setup if needed
+pip install hermes-agent
+hermes setup
 
-# Set up the agent
-cd meta-ads-kit
-openclaw start
+# From the meta-ads-kit repo root
+mkdir -p ~/.hermes/skills/marketing
+cp -R skills/* ~/.hermes/skills/marketing/
+
+# Verify the installed skills
+hermes skills list
 ```
 
-Then just message it naturally:
+Run interactively from the repo root so Hermes can also see `SOUL.md`, `AGENTS.md`, `ad-config.json`, `workspace/`, and `memory/`:
+
+```bash
+cd meta-ads-kit
+hermes chat --toolsets skills,terminal
+```
+
+Then message it naturally:
 
 - "How are my ads doing?"
 - "Any bleeders I should pause?"
 - "Which ads should I scale?"
 - "Check for creative fatigue"
 - "Show me performance by age and gender"
+- "Write copy for this image"
+- "Audit my Pixel/CAPI setup"
 - "Pause ad 12345678"
 
-The agent handles the orchestration, interprets the data, and asks before taking any action.
+Hermes handles orchestration, interprets the data, and must ask before taking any spend-affecting or attribution-affecting action.
 
-### Automate It
+### Automate Read-Only Briefings
 
-Set up a daily cron in OpenClaw:
+Create a Hermes cron briefing with the installed reporting skills and `--workdir` pointing to this repo:
 
+```bash
+hermes cron create "0 8 * * *" \
+  "Run my daily Meta ads check. Report spend pacing, active campaigns, bleeders, winners, creative fatigue, and budget recommendations. Do not pause ads, change budgets, upload creatives, send production CAPI events, or take any spend-affecting or attribution-affecting action." \
+  --name "Meta Ads Daily Briefing" \
+  --skills "meta-ads,ad-creative-monitor,budget-optimizer" \
+  --workdir "/path/to/meta-ads-kit" \
+  --deliver telegram
 ```
-"Run my daily ads check every morning at 8am and send me the summary"
-```
 
-The agent will run the 5 questions, analyze the results, and message you with findings + recommendations. You approve from your phone.
+Cron runs are headless and cannot collect approval. Use cron only for read-only reports and recommendations; perform pausing, budget changes, uploads, and production tracking changes in an interactive Hermes session.
 
 ---
 
@@ -213,7 +254,9 @@ Edit `ad-config.json` to set your benchmarks:
 }
 ```
 
-Or just tell the OpenClaw agent your benchmarks conversationally — it'll figure it out.
+You can also tell Hermes your benchmarks conversationally during an interactive session and ask it to use or update `ad-config.json`.
+
+For Graph API upload, copy generation with account-performance lookup, and Pixel/CAPI workflows, set the relevant variables in `.env` as described in [SETUP.md](SETUP.md).
 
 ---
 
@@ -223,8 +266,8 @@ Or just tell the OpenClaw agent your benchmarks conversationally — it'll figur
 |------|-------------|
 | social-cli | Free (open source) |
 | Meta API | Free (your own ad account) |
-| OpenClaw | Free (open source) |
-| **Total** | **$0/mo** |
+| Hermes Agent | Free/open source |
+| Model/API usage | Depends on your configured model provider |
 
 Your Meta ad spend is separate — this kit just helps you manage it smarter.
 
@@ -248,7 +291,7 @@ meta-ads-kit/
 │   └── pixel-capi/           # Pixel + CAPI audit, testing, EMQ optimization
 │       ├── scripts/          # pixel-audit, pixel-setup, capi-test, capi-send, emq-check
 │       └── references/       # Complete pixel + CAPI knowledge base
-├── SOUL.md                # Agent personality (for OpenClaw)
+├── SOUL.md                # Project persona/context for Hermes sessions
 ├── AGENTS.md              # Agent instructions
 └── SPEC.md                # Full system spec
 ```

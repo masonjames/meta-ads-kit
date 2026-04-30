@@ -1,21 +1,33 @@
 ---
 name: ad-copy-generator
 description: "Generate high-converting Meta ad copy matched to specific image creatives. Analyzes visuals, writes copy that reinforces the image, cross-references account performance data, and outputs asset_feed_spec-ready variants."
+version: 1.0.0
+author: Matt Berman
+license: MIT
+prerequisites:
+  commands:
+    - curl
+    - jq
 metadata:
-  openclaw:
-    emoji: "✍️"
-    user-invocable: true
-    homepage: https://github.com/TheMattBerman/meta-ads-kit
-    requires:
-      env:
-        - FACEBOOK_ACCESS_TOKEN
+  hermes:
+    category: marketing
+    tags:
+      - meta-ads
+      - ad-copy
+      - creative-strategy
+      - asset-feed-spec
+      - performance-marketing
+    related_skills:
+      - meta-ads
+      - ad-creative-monitor
+      - ad-upload
 ---
 
 # Ad Copy Generator
 
 Write Meta ad copy that's matched to the actual image creative — not generic copy pasted across every ad. Each image gets copy that reinforces its specific message, written in the brand's voice, informed by what's already working in the account.
 
-Read `workspace/brand/` per the _vibe-system protocol if available.
+Read `workspace/brand/` when available for brand voice, positioning, audience, and prior learnings.
 
 ---
 
@@ -48,7 +60,7 @@ Before writing, check for existing copy:
 
 ### Step 1: Pull What's Already Working
 
-Before writing a single word, look at the account. What copy is converting?
+Before writing a single word, look at the account when API access is available. Quick copy generation can run without account access; account-performance lookup requires `FACEBOOK_ACCESS_TOKEN`.
 
 ```bash
 # Top performers by CTR — last 30 days

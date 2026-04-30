@@ -1,15 +1,32 @@
 ---
 name: ad-upload
 description: "Push ad copy and images to Meta via Graph API — no Ads Manager required. Uploads images, builds asset_feed_spec creatives, and creates or refreshes ads in existing ad sets. Downstream of ad-copy-generator."
+version: 1.0.0
+author: Matt Berman
+license: MIT
+prerequisites:
+  commands:
+    - curl
+    - jq
+    - social
+required_environment_variables:
+  - FACEBOOK_ACCESS_TOKEN
+  - META_AD_ACCOUNT
 metadata:
-  openclaw:
-    emoji: "🚀"
-    user-invocable: true
-    homepage: https://github.com/TheMattBerman/meta-ads-kit
-    requires:
-      env:
-        - FACEBOOK_ACCESS_TOKEN
-        - META_AD_ACCOUNT
+  hermes:
+    category: marketing
+    tags:
+      - meta-ads
+      - ad-upload
+      - graph-api
+      - asset-feed-spec
+      - performance-marketing
+    related_skills:
+      - ad-copy-generator
+      - meta-ads
+      - pixel-capi
+    requires_toolsets:
+      - terminal
 ---
 
 # Ad Upload
@@ -18,7 +35,9 @@ Take the copy and images from `ad-copy-generator` and push them straight to Meta
 
 This skill handles the full upload chain: image → hash → creative (with asset_feed_spec) → ad.
 
-Read `workspace/brand/` per the _vibe-system protocol if available.
+Uploads are spend-affecting operations. Run interactively, ask for explicit approval before creating or updating ads, and use dry-run mode when the user wants a preview.
+
+Read `workspace/brand/` when available for account context, stored ad set IDs, assets, and prior learnings.
 
 ---
 

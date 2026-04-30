@@ -1,13 +1,27 @@
 ---
 name: budget-optimizer
 description: "Analyze spend efficiency across campaigns and adsets. Recommends budget shifts from underperformers to winners."
+version: 1.0.0
+author: Matt Berman
+license: MIT
+prerequisites:
+  commands:
+    - social
+    - jq
 metadata:
-  openclaw:
-    emoji: "💰"
-    user-invocable: true
-    requires:
-      tools: ["social"]
-      env: []
+  hermes:
+    category: marketing
+    tags:
+      - meta-ads
+      - budget-optimization
+      - spend-pacing
+      - roas
+      - performance-marketing
+    related_skills:
+      - meta-ads
+      - ad-creative-monitor
+    requires_toolsets:
+      - terminal
 ---
 
 # Budget Optimizer — Put Money Where It Works
@@ -48,13 +62,13 @@ Or: "Check spend pacing"
 
 ```bash
 # Efficiency ranking
-./scripts/budget-optimizer.sh efficiency [--account act_123] [--preset last_7d]
+bash "${HERMES_SKILL_DIR}/scripts/budget-optimizer.sh" efficiency [--account act_123] [--preset last_7d]
 
 # Budget recommendations
-./scripts/budget-optimizer.sh recommend [--account act_123]
+bash "${HERMES_SKILL_DIR}/scripts/budget-optimizer.sh" recommend [--account act_123]
 
 # Spend pacing check
-./scripts/budget-optimizer.sh pacing [--account act_123]
+bash "${HERMES_SKILL_DIR}/scripts/budget-optimizer.sh" pacing [--account act_123]
 ```
 
 ---

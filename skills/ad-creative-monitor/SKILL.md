@@ -1,13 +1,28 @@
 ---
 name: ad-creative-monitor
 description: "Track creative performance over time and detect fatigue before it kills ROAS. Monitors CTR decay, frequency creep, and CPC inflation at the ad level."
+version: 1.0.0
+author: Matt Berman
+license: MIT
+prerequisites:
+  commands:
+    - social
+    - jq
 metadata:
-  openclaw:
-    emoji: "😴"
-    user-invocable: true
-    requires:
-      tools: ["social"]
-      env: []
+  hermes:
+    category: marketing
+    tags:
+      - meta-ads
+      - creative-fatigue
+      - ad-creative
+      - ctr-monitoring
+      - performance-marketing
+    related_skills:
+      - meta-ads
+      - budget-optimizer
+      - ad-copy-generator
+    requires_toolsets:
+      - terminal
 ---
 
 # Ad Creative Monitor — Catch Fatigue Early
@@ -33,13 +48,13 @@ This skill watches for those signals daily and flags creatives that need rotatio
 
 ```bash
 # Run fatigue check
-./scripts/creative-monitor.sh fatigue-check
+bash "${HERMES_SKILL_DIR}/scripts/creative-monitor.sh" fatigue-check
 
 # Track specific ad over time
-./scripts/creative-monitor.sh track-ad AD_ID
+bash "${HERMES_SKILL_DIR}/scripts/creative-monitor.sh" track-ad AD_ID
 
 # Weekly creative health report
-./scripts/creative-monitor.sh weekly-report
+bash "${HERMES_SKILL_DIR}/scripts/creative-monitor.sh" weekly-report
 ```
 
 ---

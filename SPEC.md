@@ -8,10 +8,10 @@
 
 ## Overview
 
-An OpenClaw-powered Meta Ads manager that replaces daily Ads Manager sessions with AI-generated briefings and recommendations.
+A Hermes-compatible Meta Ads manager that replaces daily Ads Manager sessions with AI-generated briefings and recommendations.
 
 **The Promise:**
-Authenticate your ad account → Get daily briefings with bleeders, winners, and fatigue alerts → Approve actions from your phone
+Authenticate your ad account → Get daily briefings with bleeders, winners, fatigue alerts, and tracking-health signals → Approve actions from your phone in an interactive session
 
 **Target Users:**
 - Founders running their own Meta ads
@@ -24,31 +24,40 @@ Authenticate your ad account → Get daily briefings with bleeders, winners, and
 ## System Architecture
 
 ```
-┌──────────────────────────────────────────────────────┐
-│                META ADS COPILOT                       │
-│                                                       │
-│  ┌──────────────┐  ┌──────────────┐  ┌────────────┐ │
-│  │  meta-ads    │  │  creative    │  │  budget    │ │
-│  │  (core)      │  │  monitor     │  │  optimizer │ │
-│  └──────┬───────┘  └──────┬───────┘  └─────┬──────┘ │
-│         │                 │                 │        │
-│         └────────────┬────┴─────────────────┘        │
-│                      ▼                                │
-│         ┌─────────────────────────┐                  │
-│         │      social-cli         │                  │
-│         │  (Meta Marketing API)   │                  │
-│         └───────────┬─────────────┘                  │
-│                     ▼                                 │
-│         ┌─────────────────────────┐                  │
-│         │   Meta Marketing API    │                  │
-│         │  (Facebook/Instagram)   │                  │
-│         └─────────────────────────┘                  │
-└──────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────┐
+│                       META ADS COPILOT                         │
+│                       (Hermes Agent)                           │
+│                                                                │
+│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐           │
+│  │  meta-ads    │ │  creative    │ │  budget      │           │
+│  │  (core)      │ │  monitor     │ │  optimizer   │           │
+│  └──────┬───────┘ └──────┬───────┘ └──────┬───────┘           │
+│         │                │                │                   │
+│  ┌──────▼───────┐ ┌──────▼───────┐ ┌──────▼───────┐           │
+│  │ ad-copy-gen  │ │  ad-upload   │ │  pixel-capi  │           │
+│  │              │ │              │ │              │           │
+│  └──────┬───────┘ └──────┬───────┘ └──────┬───────┘           │
+│         │                │                │                   │
+│         └────────┬───────┴────────┬───────┘                   │
+│                  ▼                ▼                           │
+│        ┌────────────────┐ ┌──────────────────────┐            │
+│        │   social-cli   │ │  Graph API scripts   │            │
+│        │  (reporting)   │ │ uploads + Pixel/CAPI │            │
+│        └───────┬────────┘ └──────────┬───────────┘            │
+│                ▼                     ▼                        │
+│        ┌──────────────────────────────────────────┐            │
+│        │          Meta Marketing API              │            │
+│        │       Facebook / Instagram Ads           │            │
+│        └──────────────────────────────────────────┘            │
+│                                                                │
+│  Hermes cron may schedule read-only briefings with installed   │
+│  skills and this repo as --workdir. Mutations are interactive. │
+└────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## The 3 Skills
+## The 6 Skills
 
 ### Skill 1: `meta-ads` (Core)
 **Purpose:** Daily reporting and ad management actions
@@ -108,26 +117,73 @@ Authenticate your ad account → Get daily briefings with bleeders, winners, and
 - Support all Meta placement sizes (Feed, Stories, Reels)
 - Link page and Instagram account for cross-placement delivery
 
+**Actions (require approval):**
+- Uploading images to an ad account
+- Creating creatives or ads
+- Launching, pausing, or changing ad status
+
+### Skill 6: `pixel-capi`
+**Purpose:** Audit Meta Pixel + Conversions API setup and improve tracking quality
+
+**Capabilities:**
+- Audit Pixel installation and Conversions API health
+- Test server-side events and deduplication
+- Check Event Match Quality and recommend improvements
+- Provide platform-specific guidance for common website stacks
+- Help validate tracking before campaign optimization decisions
+
+**Actions (require approval):**
+- Sending production CAPI events
+- Changing tracking configuration
+- Any attribution-affecting update
+
 ---
 
 ## Data Flow
 
-### Morning Briefing (Automated)
-1. Cron triggers daily check at configured time
-2. Agent pulls insights via social-cli
+### Morning Briefing (Hermes Cron, Read-Only)
+1. Hermes cron triggers a scheduled prompt with installed skills and this repo as `--workdir`
+2. Agent pulls insights via social-cli and/or read-only scripts
 3. Analyzes: spend pacing, active campaigns, 7-day trends
-4. Identifies: bleeders, winners, fatigue signals
+4. Identifies: bleeders, winners, fatigue signals, budget recommendations, and optional tracking risks
 5. Generates: summary with recommendations
 6. Delivers: to configured channel (Telegram/Slack/etc)
-7. Waits: for user approval on any actions
+7. Does not take action: cron runs are headless and cannot collect approval
+
+Recommended cron skill set for the daily briefing:
+
+```bash
+--skills "meta-ads,ad-creative-monitor,budget-optimizer"
+```
+
+Optional tracking-health jobs can use:
+
+```bash
+--skills "pixel-capi"
+```
+
+Cron jobs must report and recommend only. Pauses, budget edits, uploads, production CAPI sends, and tracking changes are interactive-only.
 
 ### On-Demand (Interactive)
 1. User asks a question ("how are my ads?")
-2. Agent determines which report(s) to run
+2. Agent determines which report(s) or skill(s) to run
 3. Pulls data via appropriate script
-4. Interprets in context of benchmarks (ad-config.json)
+4. Interprets in context of benchmarks (`ad-config.json`)
 5. Presents findings with actionable recommendations
 6. If action needed: asks for explicit approval
+7. After approval: executes the action and logs the outcome
+
+---
+
+## Configuration
+
+Runtime configuration comes from social-cli authentication, `.env`, and `ad-config.json`.
+
+| Variable | Purpose |
+|----------|---------|
+| `META_AD_ACCOUNT` | Default Meta ad account, e.g. `act_123456789`; optional if social-cli has a default account |
+| `FACEBOOK_ACCESS_TOKEN` | Graph API token for upload workflows and account-performance lookup workflows |
+| `META_TOKEN` | Graph API token for Pixel/CAPI scripts; some scripts can fall back to social-cli config when supported |
 
 ---
 
@@ -151,11 +207,17 @@ Default thresholds (configurable in `ad-config.json`):
 ### Read-Only by Default
 All reporting is read-only. The agent can pull any data without asking.
 
+### Hermes Cron Is Read-Only
+Hermes cron may run scheduled briefings, audits, and recommendation jobs. Cron jobs must not pause ads, resume ads, change budgets, upload creatives, create ads, send production CAPI events, or change tracking configuration because cron is headless and cannot collect approval.
+
 ### Actions Require Approval
-Any action that affects spend requires explicit user confirmation:
+Any action that affects spend or attribution requires explicit user confirmation:
 - Pausing/resuming ads
 - Budget changes
 - Status changes
+- Ad uploads or ad creation
+- Production CAPI sends
+- Tracking configuration changes
 
 ### Audit Trail
 Every action is logged to `workspace/brand/learnings.md` with:

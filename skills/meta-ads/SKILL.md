@@ -1,13 +1,30 @@
 ---
 name: meta-ads
 description: "Meta Ads management and reporting — daily checks, campaign performance, creative fatigue, bleeders, winners. Wraps social-cli for Facebook/Instagram ads. The '5 Daily Questions' that replace Ads Manager."
+version: 1.0.0
+author: Matt Berman
+license: MIT
+prerequisites:
+  commands:
+    - social
+    - jq
 metadata:
-  openclaw:
-    emoji: "📣"
-    user-invocable: true
-    requires:
-      tools: ["social"]
-      env: []
+  hermes:
+    category: marketing
+    tags:
+      - meta-ads
+      - facebook-ads
+      - instagram-ads
+      - reporting
+      - performance-marketing
+    related_skills:
+      - ad-creative-monitor
+      - budget-optimizer
+      - ad-copy-generator
+      - ad-upload
+      - pixel-capi
+    requires_toolsets:
+      - terminal
 ---
 
 # Meta Ads — Your AI Ad Manager
@@ -18,9 +35,9 @@ The thesis: 90% of ad management is pattern recognition. Spend trending up or do
 
 This skill spots the patterns. You make the calls.
 
-Read `workspace/brand/` per the _vibe-system protocol
+Read `workspace/brand/` when available for account context, brand goals, and prior learnings.
 
-Follow all output formatting rules from the _vibe-system output format
+Follow the output formatting and safety rules in this skill.
 
 ---
 
@@ -101,7 +118,7 @@ Or: "Run the 5 questions on my ads"
 Or: "How are my Meta ads doing?"
 ```
 
-Script: `scripts/meta-ads.sh daily-check`
+Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" daily-check`
 
 ### Overview
 
@@ -111,7 +128,7 @@ Account-level summary with campaign breakdown.
 Tell me: "Meta ads overview for last 30 days"
 ```
 
-Script: `scripts/meta-ads.sh overview --preset last_30d`
+Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" overview --preset last_30d`
 
 ### Campaigns
 
@@ -121,7 +138,7 @@ List campaigns, optionally filtered by status.
 Tell me: "Show me active campaigns"
 ```
 
-Script: `scripts/meta-ads.sh campaigns --status ACTIVE`
+Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" campaigns --status ACTIVE`
 
 ### Top Creatives
 
@@ -131,7 +148,7 @@ Ad-level performance ranked by results.
 Tell me: "What are my best performing ads?"
 ```
 
-Script: `scripts/meta-ads.sh top-creatives --preset last_7d`
+Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" top-creatives --preset last_7d`
 
 ### Bleeders 🩸
 
@@ -142,7 +159,7 @@ Tell me: "Any ads bleeding money?"
 Or: "Find underperforming ads"
 ```
 
-Script: `scripts/meta-ads.sh bleeders --preset last_7d`
+Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" bleeders --preset last_7d`
 
 ### Winners 🏆
 
@@ -153,7 +170,7 @@ Tell me: "Which ads should I scale?"
 Or: "Show me the winners"
 ```
 
-Script: `scripts/meta-ads.sh winners --preset last_7d`
+Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" winners --preset last_7d`
 
 ### Fatigue Check 😴
 
@@ -164,7 +181,7 @@ Tell me: "Any creative fatigue?"
 Or: "Check for ad fatigue"
 ```
 
-Script: `scripts/meta-ads.sh fatigue-check`
+Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" fatigue-check`
 
 ### Custom
 
@@ -174,7 +191,7 @@ Full control. Specify level, fields, breakdowns.
 Tell me: "Show me ad performance broken down by age and gender"
 ```
 
-Script: `scripts/meta-ads.sh custom --level ad --fields "ad_name,spend,ctr,cpc" --breakdowns "age,gender"`
+Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" custom --level ad --fields "ad_name,spend,ctr,cpc" --breakdowns "age,gender"`
 
 ---
 
@@ -215,11 +232,12 @@ social marketing set-budget adset ADSET_ID --daily-budget 5000  # in cents
 
 This is the system from the newsletter. Here's how it works in practice:
 
-**Morning (automated via cron):**
-1. Run daily-check
+**Morning (automated via Hermes cron, read-only):**
+1. Run `daily-check`
 2. Flag bleeders (CTR < 1%, frequency > 3.5, CPA > threshold)
 3. Flag winners (top CTR, low CPC, scaling headroom)
 4. Send summary to Telegram/Slack
+5. Do not pause ads, change budgets, upload creatives, or take any spend-affecting action from cron
 
 **You (2 minutes over coffee):**
 1. Read the summary

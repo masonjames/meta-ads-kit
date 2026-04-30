@@ -2,6 +2,16 @@
 
 Complete knowledge base for Meta Pixel and Conversions API implementation, optimization, and troubleshooting.
 
+## Hermes execution note
+
+When this reference names a bundled script such as `pixel-audit.sh`, `pixel-setup.sh`, `capi-test.sh`, `emq-check.sh`, or `capi-send.sh`, run it from an installed Hermes skill with:
+
+```bash
+bash "${HERMES_SKILL_DIR}/scripts/<script-name>.sh" ...
+```
+
+For local repo development, the equivalent path is `skills/pixel-capi/scripts/<script-name>.sh`.
+
 ---
 
 ## 1. Overview -- Why Pixel + CAPI Together

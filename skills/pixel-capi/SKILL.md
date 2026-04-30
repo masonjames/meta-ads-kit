@@ -1,13 +1,30 @@
 ---
 name: pixel-capi
 description: "Meta Pixel + Conversions API (CAPI) setup, audit, testing, and EMQ optimization. Covers browser pixel installation, server-side CAPI implementation, deduplication, advanced matching, and Event Match Quality scoring across all major platforms."
+version: 1.0.0
+author: Matt Berman
+license: MIT
+prerequisites:
+  commands:
+    - curl
+    - jq
+    - bc
+    - sha256sum
 metadata:
-  openclaw:
-    emoji: "🎯"
-    user-invocable: true
-    requires:
-      tools: []
-      env: []
+  hermes:
+    category: marketing
+    tags:
+      - meta-pixel
+      - conversions-api
+      - capi
+      - event-match-quality
+      - server-side-tracking
+    related_skills:
+      - meta-ads
+      - ad-upload
+      - analytics-tracking
+    requires_toolsets:
+      - terminal
 ---
 
 # Pixel + CAPI -- Your Server-Side Signal Stack
@@ -18,7 +35,7 @@ The fix is Conversions API (CAPI) -- server-side event sending that runs paralle
 
 This skill audits, sets up, tests, and optimizes your Meta Pixel + CAPI stack. Target: **9.3+ EMQ on Purchase, 8.0+ on Lead**.
 
-**Always read `references/pixel-capi-reference.md` first.** That doc is the full knowledge base. Scripts automate the work; the reference doc explains the why.
+**Always load `references/pixel-capi-reference.md` from this skill first.** In Hermes, that is `${HERMES_SKILL_DIR}/references/pixel-capi-reference.md`. That doc is the full knowledge base. Scripts automate the work; the reference doc explains the why.
 
 ---
 
@@ -57,8 +74,8 @@ Before running any script, load `references/pixel-capi-reference.md` for:
 
 Check what's configured, what's missing, infer EMQ.
 
-```
-Run: scripts/pixel-audit.sh <account_id_or_pixel_id>
+```bash
+bash "${HERMES_SKILL_DIR}/scripts/pixel-audit.sh" <account_id_or_pixel_id>
 ```
 
 If given an ad account ID (e.g., `act_123456`): lists all pixels, audits each.
@@ -72,8 +89,8 @@ If given a pixel ID directly: audits that pixel only.
 
 Get platform-specific installation instructions with code snippets.
 
-```
-Run: scripts/pixel-setup.sh <platform> <pixel_id>
+```bash
+bash "${HERMES_SKILL_DIR}/scripts/pixel-setup.sh" <platform> <pixel_id>
 ```
 
 **Supported platforms:**
@@ -91,8 +108,8 @@ Output includes: pixel base code, standard events, advanced matching config, CAP
 
 Send test events and verify receipt in Events Manager.
 
-```
-Run: scripts/capi-test.sh <pixel_id> [test_event_code]
+```bash
+bash "${HERMES_SKILL_DIR}/scripts/capi-test.sh" <pixel_id> [test_event_code]
 ```
 
 Sends a test PageView and test Purchase. Use `test_event_code` to see events in Test Events tool without affecting real data.
@@ -103,8 +120,8 @@ After running: **Check Events Manager > Data Sources > [Pixel] > Test Events** t
 
 Get a detailed EMQ analysis with prioritized recommendations.
 
-```
-Run: scripts/emq-check.sh <pixel_id>
+```bash
+bash "${HERMES_SKILL_DIR}/scripts/emq-check.sh" <pixel_id>
 ```
 
 Pulls pixel config, scores each matching parameter, estimates EMQ, outputs recommendations sorted by impact (highest impact first).
@@ -117,8 +134,8 @@ EMQ targets:
 
 Send individual CAPI events with full control over parameters.
 
-```
-Run: scripts/capi-send.sh <pixel_id> <event_name> [options]
+```bash
+bash "${HERMES_SKILL_DIR}/scripts/capi-send.sh" <pixel_id> <event_name> [options]
 
 Options:
   --email "user@example.com"
@@ -167,7 +184,7 @@ export META_TOKEN="your_token_here"
 curl -s "https://graph.facebook.com/v19.0/act_ACCOUNT_ID/adspixels?fields=name,id,last_fired_time&access_token=$META_TOKEN" | jq '.data'
 ```
 
-Or run: `scripts/pixel-audit.sh act_ACCOUNT_ID`
+Or run: `bash "${HERMES_SKILL_DIR}/scripts/pixel-audit.sh" act_ACCOUNT_ID`
 
 ---
 
@@ -230,7 +247,7 @@ Without matching event IDs: every conversion counts twice. Ad account thinks you
 | ClickFunnels 2.0 | Native pixel field | CF2 CAPI native (beta) | Limited event customization |
 | Custom | Direct script tag | Server endpoint (any language) | Full control -- see reference doc |
 
-For platform-specific code: `scripts/pixel-setup.sh <platform> <pixel_id>`
+For platform-specific code: `bash "${HERMES_SKILL_DIR}/scripts/pixel-setup.sh" <platform> <pixel_id>`
 
 ---
 
@@ -238,7 +255,7 @@ For platform-specific code: `scripts/pixel-setup.sh <platform> <pixel_id>`
 
 **"My EMQ is 4.0"**
 - Almost always: email not being passed, or fbc/fbp not captured
-- Run `emq-check.sh` for specific gaps
+- Run `bash "${HERMES_SKILL_DIR}/scripts/emq-check.sh"` for specific gaps
 - Add email collection at checkout/lead form and pass hashed to CAPI
 
 **"Events are double-counting"**
@@ -249,7 +266,7 @@ For platform-specific code: `scripts/pixel-setup.sh <platform> <pixel_id>`
 **"CAPI events not showing up"**
 - Token missing `ads_management` permission
 - Wrong pixel ID
-- Run `capi-test.sh` with a test_event_code to debug in isolation
+- Run `bash "${HERMES_SKILL_DIR}/scripts/capi-test.sh"` with a test_event_code to debug in isolation
 
 **"Purchase EMQ good, Lead EMQ bad"**
 - Leads often have less user data (just email vs full checkout)
@@ -268,7 +285,7 @@ When the user asks about:
 - Facebook conversion tracking, event deduplication
 - Pixel audit, what's missing from tracking
 
-1. Read `references/pixel-capi-reference.md` for the full knowledge base
+1. Read `${HERMES_SKILL_DIR}/references/pixel-capi-reference.md` for the full knowledge base
 2. Check `workspace/brand/stack.md` for stored pixel/account IDs
 3. Run the appropriate script for the task
 4. Interpret EMQ scores against targets (9.3+ Purchase, 8.0+ Lead)
