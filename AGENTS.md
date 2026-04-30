@@ -8,7 +8,7 @@
 4. Check if Hermes Agent can see the installed skills:
    - Run `hermes skills list` and confirm all six Meta Ads Copilot skills are available
    - If a skill is missing, install/copy the full skill directory, not just `SKILL.md`, because some skills need bundled `scripts/` and `references/`
-5. Check if `social-cli` is installed and authenticated
+5. Check if the installed `meta-ads` CLI is available and authenticated/configured (`meta-ads auth status`)
 6. Run from the repo root, or configure Hermes cron with `--workdir` pointing to this repo so `SOUL.md`, `AGENTS.md`, `ad-config.json`, `workspace/`, and `memory/` are available
 
 ## Your Role
@@ -100,7 +100,7 @@ User: "Audit my Pixel/CAPI setup"
 ```
 User: "Pause that bleeder"
 → Confirm: "Pausing ad [name] (ID: [id]). This will stop it immediately. Proceed?"
-→ On approval: Execute pause via social-cli
+→ On approval: Execute pause via the installed `meta-ads` CLI
 → Log action to learnings
 ```
 
@@ -145,12 +145,12 @@ Log daily activity to `memory/YYYY-MM-DD.md`:
 | Error | Action |
 |-------|--------|
 | Hermes skill missing | Run `hermes skills list`; install/copy the full skill directory and retry |
-| Not authenticated | Guide user through `social auth login` |
-| No ad account set | Run `social marketing accounts`, help user pick one |
+| Not authenticated | Guide user to configure `ACCESS_TOKEN` for the installed `meta-ads` CLI, then run `meta-ads auth status` |
+| No ad account set | Run `meta-ads -o json ads adaccount list`, help user pick one, then set `AD_ACCOUNT_ID` |
 | No data for period | Try wider date range, report the gap |
-| Missing Graph API token | Ask user to set `FACEBOOK_ACCESS_TOKEN` or `META_TOKEN`, depending on workflow |
+| Missing Graph API token | Ask user to set `ACCESS_TOKEN`; 1Password or another secrets manager is safe storage |
 | Rate limited | Wait and retry, inform user |
-| social-cli not installed | Direct to `npm install -g @vishalgojha/social-cli` |
+| `meta-ads` CLI not installed | Install/configure the `meta-ads` CLI or set `META_ADS_CLI` to its path |
 
 ## Benchmarks
 
@@ -163,9 +163,10 @@ Read `ad-config.json` for target benchmarks. If not configured, use sensible def
 ## Environment
 
 ```bash
-META_AD_ACCOUNT=act_xxx          # Default ad account; optional if set via social-cli
-FACEBOOK_ACCESS_TOKEN=EAAB...    # Graph API token for ad upload and account-performance lookup workflows
-META_TOKEN=EAAB...               # Graph API token for Pixel/CAPI scripts; can fall back to social-cli config when supported
+ACCESS_TOKEN=EAAB...       # Meta Graph API token used by meta-ads CLI and direct Graph API workflows
+AD_ACCOUNT_ID=act_xxx      # Default ad account
+BUSINESS_ID=123456789      # Optional Business Manager ID
+META_ADS_CLI=meta-ads      # Optional CLI override
 ```
 
-Reporting workflows prefer social-cli token management. Graph API upload, copy lookup, and Pixel/CAPI workflows may require explicit token variables in `.env`.
+Reporting workflows use `meta-ads` with the global JSON flag before subcommands, e.g. `meta-ads -o json ads insights get`. Upload, copy lookup, and Pixel/CAPI direct Graph workflows use `ACCESS_TOKEN`.

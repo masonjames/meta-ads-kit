@@ -6,24 +6,19 @@
 #
 # Platforms: nextjs, shopify, wordpress, webflow, ghl, clickfunnels, custom
 #
-# Requires: META_TOKEN env var or ~/.social-cli/config.json with meta_access_token
+# Requires: ACCESS_TOKEN env var
 
 set -euo pipefail
 
 API_BASE="https://graph.facebook.com/v19.0"
 
 get_token() {
-  if [[ -n "${META_TOKEN:-}" ]]; then
-    echo "$META_TOKEN"
+  if [[ -n "${ACCESS_TOKEN:-}" ]]; then
+    echo "$ACCESS_TOKEN"
     return
   fi
-  local config="$HOME/.social-cli/config.json"
-  if [[ -f "$config" ]]; then
-    local tok
-    tok=$(jq -r '.meta_access_token // .access_token // empty' "$config" 2>/dev/null || true)
-    [[ -n "$tok" ]] && echo "$tok" && return
-  fi
-  echo "ERROR: META_TOKEN not set" >&2
+  echo "ERROR: ACCESS_TOKEN not set" >&2
+  echo "Set it: export ACCESS_TOKEN=your_token" >&2
   exit 1
 }
 
@@ -169,7 +164,7 @@ STEP 3 -- Create CAPI API route (app/api/capi/route.ts)
   import crypto from 'crypto'
 
   const PIXEL_ID = '${PIXEL_ID}'
-  const ACCESS_TOKEN = process.env.META_CAPI_TOKEN!
+  const ACCESS_TOKEN = process.env.ACCESS_TOKEN!
 
   function sha256(value: string): string {
     return crypto.createHash('sha256').update(value.trim().toLowerCase()).digest('hex')
@@ -223,7 +218,7 @@ STEP 3 -- Create CAPI API route (app/api/capi/route.ts)
 
 STEP 4 -- Environment variables (.env.local)
 
-  META_CAPI_TOKEN=your_system_user_token_here
+  ACCESS_TOKEN=your_system_user_token_here
 
 COMMON GOTCHAS:
 - Fire fbq() only client-side (useEffect / 'use client') -- never in server components
@@ -373,7 +368,7 @@ STEP 2 -- WooCommerce purchase event
     });
 
     function wc_send_capi_purchase(\$order, \$event_id, \$billing) {
-      \$token = defined('META_CAPI_TOKEN') ? META_CAPI_TOKEN : get_option('meta_capi_token');
+      \$token = defined('ACCESS_TOKEN') ? ACCESS_TOKEN : get_option('access_token');
       \$pixel_id = '${PIXEL_ID}';
 
       \$user_data = [
@@ -406,9 +401,9 @@ STEP 2 -- WooCommerce purchase event
       ]);
     }
 
-STEP 3 -- Define META_CAPI_TOKEN in wp-config.php
+STEP 3 -- Define ACCESS_TOKEN in wp-config.php
 
-    define('META_CAPI_TOKEN', 'your_system_user_token');
+    define('ACCESS_TOKEN', 'your_system_user_token');
 
 COMMON GOTCHAS:
 - Caching plugins can prevent pixel from loading on first visit -- exclude checkout/thank-you pages from cache

@@ -6,7 +6,7 @@ author: Matt Berman
 license: MIT
 prerequisites:
   commands:
-    - social
+    - meta-ads
     - jq
 metadata:
   hermes:
@@ -89,7 +89,7 @@ Or: "Which ads need fresh creative?"
 
 ## Invocation
 
-1. Pull ad-level insights with daily time increment (`--time-increment 1`)
+1. Pull ad-level fields with daily time increment (`meta-ads -o json ads insights get --date-preset last_7d --time-increment daily --fields "ad_name,ad_id,date_start,impressions,clicks,ctr,cpc,frequency,spend"`)
 2. Calculate day-over-day CTR, CPC, and frequency trends
 3. Flag any ad showing fatigue signals
 4. Compare against benchmarks in `ad-config.json`

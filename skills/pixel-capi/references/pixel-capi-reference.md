@@ -217,7 +217,7 @@ Use a System User token for production. System Users don't expire like regular u
 4. Generate token > select scopes: `ads_management`, `ads_read`
 5. Token does not expire (unless you revoke it or revoke app access)
 
-Alternatively, use `social auth login` via social-cli to get a user token (expires in 60 days typically).
+For this kit, store the selected token as `ACCESS_TOKEN`; direct Pixel/CAPI scripts do not read CLI fallback config. User tokens may expire, so System User tokens are preferred for production.
 
 ### Partner integrations
 
@@ -957,7 +957,7 @@ Test a specific CAPI call from command line:
 
 ```bash
 curl -s -X POST \
-  "https://graph.facebook.com/v19.0/PIXEL_ID/events?access_token=$META_TOKEN" \
+  "https://graph.facebook.com/v19.0/PIXEL_ID/events?access_token=$ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "data": [{

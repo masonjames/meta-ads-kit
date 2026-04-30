@@ -156,32 +156,27 @@ PII (email, phone, names) is hashed automatically. Event ID is generated if not 
 
 ## Setup
 
-### Get a META_TOKEN
+### Get an ACCESS_TOKEN
 
-You need a Meta access token with `ads_management` and `ads_read` permissions. Two ways:
+You need a Meta access token with `ads_management` and `ads_read` permissions. Direct Pixel/CAPI scripts call Graph API directly and use `ACCESS_TOKEN`.
 
-**Option A -- System User token (recommended for CAPI):**
+**System User token (recommended for CAPI):**
 1. Business Manager > Business Settings > System Users
 2. Create system user, assign to pixel with "Analyze" permission
-3. Generate token with `ads_management` scope
-
-**Option B -- User token:**
-```bash
-social auth login
-# Then check: cat ~/.social-cli/config.json
-```
+3. Generate token with `ads_management` and `ads_read` scopes
 
 **Store token:**
 ```bash
-export META_TOKEN="your_token_here"
-# Or add to ~/.social-cli/config.json as "meta_access_token"
+export ACCESS_TOKEN="your_token_here"
 ```
+
+Store real values in `.env`, `~/.hermes/envs/meta-ads/.env`, or a secrets manager such as 1Password. Never commit tokens.
 
 ### Get Your Pixel ID
 
 ```bash
 # List all pixels for an ad account
-curl -s "https://graph.facebook.com/v19.0/act_ACCOUNT_ID/adspixels?fields=name,id,last_fired_time&access_token=$META_TOKEN" | jq '.data'
+curl -s "https://graph.facebook.com/v19.0/act_ACCOUNT_ID/adspixels?fields=name,id,last_fired_time&access_token=$ACCESS_TOKEN" | jq '.data'
 ```
 
 Or run: `bash "${HERMES_SKILL_DIR}/scripts/pixel-audit.sh" act_ACCOUNT_ID`

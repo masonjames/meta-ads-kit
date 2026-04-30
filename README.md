@@ -44,20 +44,17 @@ I'm open-sourcing this because every founder running Meta ads deserves a copilot
 git clone https://github.com/themattberman/meta-ads-kit.git
 cd meta-ads-kit
 
-# Install social-cli (the engine under the hood)
-npm install -g @vishalgojha/social-cli
+# Install/configure the meta-ads CLI, then verify it
+meta-ads auth status
 
-# Authenticate with Meta
-social auth login
-
-# Set your default ad account
-social marketing accounts
-social marketing set-default-account act_YOUR_ACCOUNT_ID
+# List ad accounts as JSON and choose one
+meta-ads -o json ads adaccount list
 
 # Copy config
 cp .env.example .env
 cp ad-config.example.json ad-config.json
 
+# Edit .env with ACCESS_TOKEN, AD_ACCOUNT_ID, optional BUSINESS_ID / META_ADS_CLI
 # Edit ad-config.json with your benchmarks
 ```
 
@@ -256,7 +253,7 @@ Edit `ad-config.json` to set your benchmarks:
 
 You can also tell Hermes your benchmarks conversationally during an interactive session and ask it to use or update `ad-config.json`.
 
-For Graph API upload, copy generation with account-performance lookup, and Pixel/CAPI workflows, set the relevant variables in `.env` as described in [SETUP.md](SETUP.md).
+Set `ACCESS_TOKEN`, `AD_ACCOUNT_ID`, optional `BUSINESS_ID`, and optional `META_ADS_CLI` in `.env` as described in [SETUP.md](SETUP.md). Direct Graph API upload and Pixel/CAPI workflows use the same `ACCESS_TOKEN`.
 
 ---
 
@@ -264,7 +261,7 @@ For Graph API upload, copy generation with account-performance lookup, and Pixel
 
 | Tool | Monthly Cost |
 |------|-------------|
-| social-cli | Free (open source) |
+| meta-ads CLI | Free/local installed CLI |
 | Meta API | Free (your own ad account) |
 | Hermes Agent | Free/open source |
 | Model/API usage | Depends on your configured model provider |
@@ -304,7 +301,7 @@ This is open source. PRs welcome.
 
 Ideas for contribution:
 
-- Google Ads support (social-cli may add this)
+- Google Ads support
 - Creative performance dashboards
 - Automated A/B test analysis
 - Multi-account agency mode

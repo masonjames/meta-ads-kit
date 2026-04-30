@@ -4,67 +4,63 @@ Get your Hermes-powered AI ad manager running in 10 minutes.
 
 ---
 
-## Step 1: Install social-cli
+## Step 1: Install and Verify `meta-ads`
 
-social-cli is the open-source engine that talks to the Meta Marketing API.
+This kit uses the installed `meta-ads` CLI for Meta Ads reporting. Docs prefer the `meta-ads` command, not any symlink.
 
 ```bash
-npm install -g @vishalgojha/social-cli
+meta-ads auth status
 ```
 
-Verify it's installed:
+If the command is installed outside your `PATH`, set an override in `.env`:
+
 ```bash
-social --version
+META_ADS_CLI=/absolute/path/to/meta-ads
 ```
+
+The wrapper can load credentials from `~/.hermes/envs/meta-ads/.env`. Keep real tokens out of git; 1Password or another secrets manager is a safe storage option.
 
 ---
 
-## Step 2: Authenticate with Meta
+## Step 2: Configure Meta Credentials
 
-```bash
-social auth login
-```
-
-This opens your browser to authorize with Meta. You need:
-- A Facebook account with access to your ad account
-- Permission to read ad insights (most ad account admins have this)
-
-### Advanced: Using a Meta App
-
-If you have a Meta developer app:
-
-```bash
-social auth set-app --app-id YOUR_APP_ID --app-secret YOUR_APP_SECRET
-social auth login --scopes ads_read,ads_management,read_insights
-```
-
----
-
-## Step 3: Set Your Ad Account
-
-List your available ad accounts:
-```bash
-social marketing accounts
-```
-
-Set the default:
-```bash
-social marketing set-default-account act_YOUR_ACCOUNT_ID
-```
-
-Or set via environment variable:
-```bash
-export META_AD_ACCOUNT=act_YOUR_ACCOUNT_ID
-```
-
----
-
-## Step 4: Configure Benchmarks and Tokens
+Copy the templates:
 
 ```bash
 cp .env.example .env
 cp ad-config.example.json ad-config.json
 ```
+
+Edit `.env`:
+
+| Variable | Used For |
+|----------|----------|
+| `ACCESS_TOKEN` | Meta Graph API token used by `meta-ads` CLI, ad upload, copy lookup, and Pixel/CAPI direct Graph workflows |
+| `AD_ACCOUNT_ID` | Default ad account, e.g. `act_123456789` |
+| `BUSINESS_ID` | Optional Business Manager ID for business-scoped workflows |
+| `META_ADS_CLI` | Optional path/name override for the installed `meta-ads` binary |
+
+Tokens need `ads_read` and `read_insights` for monitoring. Add `ads_management` only for interactive sessions where you want approved spend-affecting actions or Graph API ad creation.
+
+---
+
+## Step 3: Choose Your Ad Account
+
+List your available ad accounts with the JSON flag before the subcommand:
+
+```bash
+meta-ads -o json ads adaccount list
+```
+
+Set the selected account in `.env`:
+
+```bash
+AD_ACCOUNT_ID=act_YOUR_ACCOUNT_ID
+```
+
+---
+
+## Step 4: Configure Benchmarks
 
 Edit `ad-config.json` with your targets:
 
@@ -85,16 +81,6 @@ Edit `ad-config.json` with your targets:
 ```
 
 **Don't know your benchmarks?** Leave the defaults — the agent will learn them from your data.
-
-Edit `.env` if you use Graph API or Pixel/CAPI workflows:
-
-| Variable | Used For |
-|----------|----------|
-| `META_AD_ACCOUNT` | Default ad account, optional if set through social-cli |
-| `FACEBOOK_ACCESS_TOKEN` | Graph API copy lookup and ad upload workflows |
-| `META_TOKEN` | Pixel/CAPI scripts, unless social-cli config provides a usable token |
-
-Reporting workflows prefer social-cli authentication. Upload and Pixel/CAPI workflows may need explicit token variables.
 
 ---
 
@@ -186,25 +172,27 @@ Use your preferred delivery target for `--deliver`. Keep `--workdir` pointed at 
 
 | Problem | Fix |
 |---------|-----|
-| `social: command not found` | Run `npm install -g @vishalgojha/social-cli` |
-| Authentication fails | Try `social auth login` again, check browser popup |
-| "No ad accounts found" | Make sure your Facebook user has ad account access |
+| `meta-ads: command not found` | Install/configure the `meta-ads` CLI or set `META_ADS_CLI=/absolute/path/to/meta-ads` |
+| Authentication/config check fails | Verify `ACCESS_TOKEN` is set and run `meta-ads auth status` |
+| "No ad accounts found" | Make sure the token's user/system user has ad account access; run `meta-ads -o json ads adaccount list` |
 | No data returned | Check that campaigns have been running in the selected time period |
 | Rate limited | Wait a few minutes and retry |
 | Hermes skill not listed | Copy the full directory from `skills/<skill-name>/` into your Hermes skills path, then rerun `hermes skills list` |
 | Script/reference not found | Reinstall by copying the full skill folder, not just `SKILL.md` |
 | Cron cannot find repo files | Add `--workdir /path/to/meta-ads-kit` to the cron job |
 | Cron does not run automatically | Confirm the Hermes gateway/cron service is running in your Hermes environment |
-| Missing Graph API token | Set `FACEBOOK_ACCESS_TOKEN` for upload/copy lookup workflows or `META_TOKEN` for Pixel/CAPI workflows |
+| Missing Graph API token | Set `ACCESS_TOKEN` for upload, copy lookup, and Pixel/CAPI workflows |
 
 ### Check Everything
 
 ```bash
-social doctor
+meta-ads auth status
+meta-ads -o json ads adaccount list
+meta-ads -o json ads campaign list
 hermes skills list
 ```
 
-This checks social-cli diagnostics and confirms Hermes can see the installed skill pack.
+This checks `meta-ads` configuration and confirms Hermes can see the installed skill pack.
 
 ---
 
@@ -213,7 +201,7 @@ This checks social-cli diagnostics and confirms Hermes can see the installed ski
 | Permission | Required For |
 |-----------|-------------|
 | `ads_read` | Reading campaign data, insights |
-| `ads_management` | Pausing/resuming ads, budget changes, ad creation |
 | `read_insights` | Performance metrics |
+| `ads_management` | Pausing/resuming ads, budget changes, ad creation, and CAPI event send permissions where required |
 
-`ads_read` + `read_insights` are enough for monitoring only. Add `ads_management` only if you want interactive sessions to take approved action.
+`ads_read` + `read_insights` are enough for monitoring only. Add `ads_management` only if you want interactive sessions to take approved action or create/upload ads.

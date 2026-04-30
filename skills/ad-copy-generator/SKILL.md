@@ -60,24 +60,25 @@ Before writing, check for existing copy:
 
 ### Step 1: Pull What's Already Working
 
-Before writing a single word, look at the account when API access is available. Quick copy generation can run without account access; account-performance lookup requires `FACEBOOK_ACCESS_TOKEN`.
+Before writing a single word, look at the account when API access is available. Quick copy generation can run without account access; account-performance lookup should prefer the installed `meta-ads` CLI and uses `AD_ACCOUNT_ID`. Direct creative lookup uses `ACCESS_TOKEN`.
 
 ```bash
 # Top performers by CTR — last 30 days
-curl -s "https://graph.facebook.com/v22.0/ACT_ID/insights?\
-level=ad&fields=ad_name,impressions,clicks,ctr,cpc,cost_per_action_type\
-&date_preset=last_30d&sort=ctr_descending&limit=20\
-&access_token=$FACEBOOK_ACCESS_TOKEN"
+${META_ADS_CLI:-meta-ads} -o json ads insights get \
+  --date-preset last_30d \
+  --fields "ad_name,ad_id,campaign_name,campaign_id,impressions,clicks,ctr,cpc,cost_per_action_type" \
+  --sort ctr_descending \
+  --limit 20
 ```
 
 Then pull copy from winners:
 
 ```bash
 # Get creative ID from the ad
-curl -s "https://graph.facebook.com/v22.0/AD_ID?fields=creative{id}&access_token=$FACEBOOK_ACCESS_TOKEN"
+curl -s "https://graph.facebook.com/v22.0/AD_ID?fields=creative{id}&access_token=$ACCESS_TOKEN"
 
 # Get the actual copy
-curl -s "https://graph.facebook.com/v22.0/CREATIVE_ID?fields=asset_feed_spec&access_token=$FACEBOOK_ACCESS_TOKEN"
+curl -s "https://graph.facebook.com/v22.0/CREATIVE_ID?fields=asset_feed_spec&access_token=$ACCESS_TOKEN"
 ```
 
 **Extract patterns:**

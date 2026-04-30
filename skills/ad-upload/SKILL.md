@@ -8,10 +8,9 @@ prerequisites:
   commands:
     - curl
     - jq
-    - social
 required_environment_variables:
-  - FACEBOOK_ACCESS_TOKEN
-  - META_AD_ACCOUNT
+  - ACCESS_TOKEN
+  - AD_ACCOUNT_ID
 metadata:
   hermes:
     category: marketing
@@ -65,21 +64,21 @@ Read `workspace/brand/` when available for account context, stored ad set IDs, a
 ### Token
 
 ```bash
-# Get your Facebook access token
-TOKEN=$(jq -r '.profiles.default.tokens.facebook' ~/.social-cli/config.json)
-export FACEBOOK_ACCESS_TOKEN=$TOKEN
+# Set your Meta Graph API token. Store the real value in .env, ~/.hermes/envs/meta-ads/.env,
+# or a secrets manager such as 1Password; never commit it.
+export ACCESS_TOKEN=EAAB...
 
 # Verify it works
-curl -s "https://graph.facebook.com/v22.0/me?access_token=$FACEBOOK_ACCESS_TOKEN" | jq .
+curl -s "https://graph.facebook.com/v22.0/me?access_token=$ACCESS_TOKEN" | jq .
 ```
 
 ### Ad Account
 
 ```bash
 # List ad accounts you have access to
-curl -s "https://graph.facebook.com/v22.0/me/adaccounts?fields=id,name&access_token=$FACEBOOK_ACCESS_TOKEN" | jq '.data[]'
+curl -s "https://graph.facebook.com/v22.0/me/adaccounts?fields=id,name&access_token=$ACCESS_TOKEN" | jq '.data[]'
 
-export META_AD_ACCOUNT="act_123456789"
+export AD_ACCOUNT_ID="act_123456789"
 ```
 
 Store in `workspace/brand/stack.md` so you don't set these every time:
@@ -169,8 +168,8 @@ Dry-run output shows:
 ### Single Image Upload
 
 ```bash
-TOKEN="$FACEBOOK_ACCESS_TOKEN"
-ACCOUNT="$META_AD_ACCOUNT"  # e.g. act_123456789
+TOKEN="$ACCESS_TOKEN"
+ACCOUNT="$AD_ACCOUNT_ID"  # e.g. act_123456789
 IMAGE_PATH="/path/to/image.jpg"
 IMAGE_NAME="summer-sale-hero.jpg"
 
@@ -238,8 +237,8 @@ This is Meta's Degrees of Freedom format. You provide multiple headlines, bodies
 ### Full asset_feed_spec Creative
 
 ```bash
-ACCOUNT="$META_AD_ACCOUNT"
-TOKEN="$FACEBOOK_ACCESS_TOKEN"
+ACCOUNT="$AD_ACCOUNT_ID"
+TOKEN="$ACCESS_TOKEN"
 PAGE_ID="YOUR_FACEBOOK_PAGE_ID"
 IMAGE_HASH="a1b2c3d4..."  # from Step 2
 PIXEL_ID="YOUR_PIXEL_ID"  # optional but recommended
@@ -330,8 +329,8 @@ curl -s \
 ### Create New Ad
 
 ```bash
-ACCOUNT="$META_AD_ACCOUNT"
-TOKEN="$FACEBOOK_ACCESS_TOKEN"
+ACCOUNT="$AD_ACCOUNT_ID"
+TOKEN="$ACCESS_TOKEN"
 ADSET_ID="23847000000001"  # existing ad set ID
 CREATIVE_ID="23847293847293847"  # from Step 3
 
@@ -500,7 +499,7 @@ Review at: https://www.facebook.com/adsmanager/manage/ads
 
 | Error Code | Meaning | Fix |
 |------------|---------|-----|
-| `190` | Token expired or invalid | Re-auth: `social auth login` |
+| `190` | Token expired or invalid | Refresh or replace `ACCESS_TOKEN`, then run `meta-ads auth status` |
 | `200` | Permission missing | Add `ads_management` scope to token |
 | `294` | Managing ads over rate limit | Back off 60s, retry |
 | `100` | Invalid parameter | Check field names and values |
@@ -513,13 +512,11 @@ Review at: https://www.facebook.com/adsmanager/manage/ads
 ```bash
 # Check token validity
 curl -s "https://graph.facebook.com/v22.0/debug_token?\
-input_token=$FACEBOOK_ACCESS_TOKEN\
-&access_token=$FACEBOOK_ACCESS_TOKEN" | jq '.data | {valid, expires_at, scopes}'
+input_token=$ACCESS_TOKEN\
+&access_token=$ACCESS_TOKEN" | jq '.data | {valid, expires_at, scopes}'
 
-# If expired, re-auth
-social auth login
-# Then re-export
-export FACEBOOK_ACCESS_TOKEN=$(jq -r '.profiles.default.tokens.facebook' ~/.social-cli/config.json)
+# If expired, refresh or replace ACCESS_TOKEN in your secure env store
+meta-ads auth status
 ```
 
 ### Rate Limits (Error 294)
@@ -548,10 +545,7 @@ upload_with_retry() {
 
 ### Permission Issues (Error 200)
 
-Token needs `ads_management` scope:
-```bash
-social auth login --scopes "ads_read,ads_management,pages_read_engagement"
-```
+Token needs `ads_management` scope. Generate or refresh `ACCESS_TOKEN` with `ads_read`, `ads_management`, and any page permissions needed for the creative workflow, then rerun `meta-ads auth status`.
 
 ### Image Rejected
 
@@ -665,7 +659,7 @@ This skill reads from the same path. Zero copy-paste.
 - **Uploading duplicate images** — Check `workspace/brand/assets.md` for existing hashes first
 - **One-size copy across all placements** — asset_feed_spec exists so Meta can optimize per placement; give it options (3+ bodies, 3+ titles)
 - **Using WebP images** — Meta accepts them sometimes but rejects them in specific placements; stick to JPG/PNG
-- **Hard-coding token in scripts** — Always read from `~/.social-cli/config.json` or env var; never commit tokens
+- **Hard-coding token in scripts** — Always read from `ACCESS_TOKEN` in env or a secrets manager; never commit tokens
 - **Skipping the page ID** — Creative will fail without a valid Facebook Page ID in `object_story_spec`
 - **Not saving upload responses** — If you don't save the creative ID and ad ID, you can't update or monitor later
 - **Creating new ad for copy refresh** — Update the creative on the existing ad to preserve metric history and delivery algorithm learning

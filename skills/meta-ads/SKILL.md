@@ -1,12 +1,12 @@
 ---
 name: meta-ads
-description: "Meta Ads management and reporting — daily checks, campaign performance, creative fatigue, bleeders, winners. Wraps social-cli for Facebook/Instagram ads. The '5 Daily Questions' that replace Ads Manager."
+description: "Meta Ads management and reporting — daily checks, campaign performance, creative fatigue, bleeders, winners. Uses the installed meta-ads CLI for Facebook/Instagram ads. The '5 Daily Questions' that replace Ads Manager."
 version: 1.0.0
 author: Matt Berman
 license: MIT
 prerequisites:
   commands:
-    - social
+    - meta-ads
     - jq
 metadata:
   hermes:
@@ -29,7 +29,7 @@ metadata:
 
 # Meta Ads — Your AI Ad Manager
 
-Stop clicking through Ads Manager. This skill wraps [social-cli](https://github.com/vishalgojha/social-CLI) to give you the five things that actually matter about your Meta campaigns — in plain text, every day.
+Stop clicking through Ads Manager. This skill uses the installed `meta-ads` CLI to give you the five things that actually matter about your Meta campaigns — in plain text, every day.
 
 The thesis: 90% of ad management is pattern recognition. Spend trending up or down. CTR declining (creative fatigue). CPA spiking (audience exhaustion). Winners emerging. Losers bleeding.
 
@@ -63,11 +63,13 @@ Follow the output formatting and safety rules in this skill.
 
 ## Setup (One Time)
 
-### 1. Install social-cli
+### 1. Install/configure `meta-ads`
 
 ```bash
-npm install -g @vishalgojha/social-cli
+meta-ads auth status
 ```
+
+If needed, set `META_ADS_CLI=/absolute/path/to/meta-ads`. The CLI loads `ACCESS_TOKEN`, `AD_ACCOUNT_ID`, and optional `BUSINESS_ID` from your environment or `~/.hermes/envs/meta-ads/.env`. Store secrets safely, for example in 1Password, and never commit them.
 
 ### 2. Create a Meta App (if you don't have one)
 
@@ -76,27 +78,22 @@ npm install -g @vishalgojha/social-cli
 3. Add "Marketing API" product
 4. Note your App ID and App Secret
 
-### 3. Authenticate
+### 3. Configure credentials
+
+Set `ACCESS_TOKEN` with `ads_read` and `read_insights` for reporting. Add `ads_management` only for approved interactive actions.
 
 ```bash
-social auth login
-# Opens browser → approve → done
-```
-
-Or with app credentials:
-```bash
-social auth set-app --app-id YOUR_APP_ID --app-secret YOUR_APP_SECRET
-social auth login --scopes ads_read,ads_management,read_insights
+export ACCESS_TOKEN=EAAB...
+meta-ads auth status
 ```
 
 ### 4. Set default ad account
 
 ```bash
-social marketing accounts          # Lists your ad accounts
-social marketing set-default-account act_123456
+meta-ads -o json ads adaccount list
 ```
 
-Or set env: `export META_AD_ACCOUNT=act_123456`
+Set env: `export AD_ACCOUNT_ID=act_123456`
 
 ---
 
@@ -128,7 +125,7 @@ Account-level summary with campaign breakdown.
 Tell me: "Meta ads overview for last 30 days"
 ```
 
-Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" overview --preset last_30d`
+Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" overview --date-preset last_30d`
 
 ### Campaigns
 
@@ -148,7 +145,7 @@ Ad-level performance ranked by results.
 Tell me: "What are my best performing ads?"
 ```
 
-Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" top-creatives --preset last_7d`
+Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" top-creatives --date-preset last_7d`
 
 ### Bleeders 🩸
 
@@ -159,7 +156,7 @@ Tell me: "Any ads bleeding money?"
 Or: "Find underperforming ads"
 ```
 
-Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" bleeders --preset last_7d`
+Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" bleeders --date-preset last_7d`
 
 ### Winners 🏆
 
@@ -170,7 +167,7 @@ Tell me: "Which ads should I scale?"
 Or: "Show me the winners"
 ```
 
-Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" winners --preset last_7d`
+Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" winners --date-preset last_7d`
 
 ### Fatigue Check 😴
 
@@ -185,13 +182,13 @@ Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" fatigu
 
 ### Custom
 
-Full control. Specify level, fields, breakdowns.
+Full control. Specify fields, repeated breakdowns, date ranges, and optional `--campaign-id`, `--adset-id`, or `--ad-id` filters.
 
 ```
 Tell me: "Show me ad performance broken down by age and gender"
 ```
 
-Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" custom --level ad --fields "ad_name,spend,ctr,cpc" --breakdowns "age,gender"`
+Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" custom --fields "ad_name,ad_id,spend,ctr,cpc" --breakdown age --breakdown gender`
 
 ---
 
@@ -207,24 +204,24 @@ Script (installed skill): `bash "${HERMES_SKILL_DIR}/scripts/meta-ads.sh" custom
 
 ## Actions (Use With Care)
 
-Beyond reporting, social-cli can take action. These are wrapped here for the "AI ad manager" workflow but require explicit approval.
+Beyond reporting, `meta-ads` can take action. These are for the "AI ad manager" workflow but require explicit approval.
 
 ### Pause a bleeder
 ```bash
-social marketing pause ad AD_ID
+meta-ads ads ad pause AD_ID
 ```
 
 ### Resume a winner
 ```bash
-social marketing resume ad AD_ID
+meta-ads ads ad resume AD_ID
 ```
 
 ### Shift budget
 ```bash
-social marketing set-budget adset ADSET_ID --daily-budget 5000  # in cents
+meta-ads ads adset budget set ADSET_ID --daily-budget 5000  # in cents
 ```
 
-**Safety:** All mutating actions are high-risk in social-cli and require confirmation. The skill should ALWAYS present findings and recommendations first, then ask for explicit approval before taking action.
+**Safety:** All mutating actions are high-risk and require confirmation. The skill should ALWAYS present findings and recommendations first, then ask for explicit approval before taking action.
 
 ---
 
@@ -256,8 +253,8 @@ This is the system from the newsletter. Here's how it works in practice:
 When the user asks about Meta ads, Facebook ads, Instagram ads, or campaign performance:
 
 1. Check `workspace/brand/stack.md` for stored ad account ID
-2. Check `META_AD_ACCOUNT` env var
-3. If neither, run `social marketing accounts` to list available accounts
+2. Check `AD_ACCOUNT_ID` env var
+3. If neither, run `meta-ads -o json ads adaccount list` to list available accounts
 4. Run the appropriate report
 5. Interpret results in context of brand goals (from stack.md/learnings.md)
 6. For bleeders/winners, present clear recommendations with reasoning

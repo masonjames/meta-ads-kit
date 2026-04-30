@@ -41,7 +41,7 @@ Authenticate your ad account → Get daily briefings with bleeders, winners, fat
 │         └────────┬───────┴────────┬───────┘                   │
 │                  ▼                ▼                           │
 │        ┌────────────────┐ ┌──────────────────────┐            │
-│        │   social-cli   │ │  Graph API scripts   │            │
+│        │  meta-ads CLI  │ │  Graph API scripts   │            │
 │        │  (reporting)   │ │ uploads + Pixel/CAPI │            │
 │        └───────┬────────┘ └──────────┬───────────┘            │
 │                ▼                     ▼                        │
@@ -143,7 +143,7 @@ Authenticate your ad account → Get daily briefings with bleeders, winners, fat
 
 ### Morning Briefing (Hermes Cron, Read-Only)
 1. Hermes cron triggers a scheduled prompt with installed skills and this repo as `--workdir`
-2. Agent pulls insights via social-cli and/or read-only scripts
+2. Agent pulls insights via `meta-ads -o json ...` and/or read-only scripts
 3. Analyzes: spend pacing, active campaigns, 7-day trends
 4. Identifies: bleeders, winners, fatigue signals, budget recommendations, and optional tracking risks
 5. Generates: summary with recommendations
@@ -177,13 +177,14 @@ Cron jobs must report and recommend only. Pauses, budget edits, uploads, product
 
 ## Configuration
 
-Runtime configuration comes from social-cli authentication, `.env`, and `ad-config.json`.
+Runtime configuration comes from `.env`, the installed `meta-ads` CLI, and `ad-config.json`.
 
 | Variable | Purpose |
 |----------|---------|
-| `META_AD_ACCOUNT` | Default Meta ad account, e.g. `act_123456789`; optional if social-cli has a default account |
-| `FACEBOOK_ACCESS_TOKEN` | Graph API token for upload workflows and account-performance lookup workflows |
-| `META_TOKEN` | Graph API token for Pixel/CAPI scripts; some scripts can fall back to social-cli config when supported |
+| `ACCESS_TOKEN` | Meta Graph API token used by `meta-ads` CLI and direct Graph workflows |
+| `AD_ACCOUNT_ID` | Default Meta ad account, e.g. `act_123456789` |
+| `BUSINESS_ID` | Optional Business Manager ID for business-scoped workflows |
+| `META_ADS_CLI` | Optional path/name override for the installed `meta-ads` binary |
 
 ---
 
@@ -230,7 +231,7 @@ Every action is logged to `workspace/brand/learnings.md` with:
 
 ## Future Roadmap
 
-- [ ] Google Ads support (when social-cli adds it)
+- [ ] Google Ads support
 - [ ] Multi-account dashboard for agencies
 - [ ] Automated A/B test detection and analysis
 - [ ] Creative performance prediction

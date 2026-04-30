@@ -6,7 +6,7 @@ author: Matt Berman
 license: MIT
 prerequisites:
   commands:
-    - social
+    - meta-ads
     - jq
 metadata:
   hermes:
@@ -62,13 +62,13 @@ Or: "Check spend pacing"
 
 ```bash
 # Efficiency ranking
-bash "${HERMES_SKILL_DIR}/scripts/budget-optimizer.sh" efficiency [--account act_123] [--preset last_7d]
+bash "${HERMES_SKILL_DIR}/scripts/budget-optimizer.sh" efficiency [--date-preset last_7d]
 
 # Budget recommendations
-bash "${HERMES_SKILL_DIR}/scripts/budget-optimizer.sh" recommend [--account act_123]
+bash "${HERMES_SKILL_DIR}/scripts/budget-optimizer.sh" recommend
 
 # Spend pacing check
-bash "${HERMES_SKILL_DIR}/scripts/budget-optimizer.sh" pacing [--account act_123]
+bash "${HERMES_SKILL_DIR}/scripts/budget-optimizer.sh" pacing
 ```
 
 ---

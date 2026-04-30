@@ -71,7 +71,7 @@ You make the calls. I do the watching.
 | Tool | Purpose |
 |------|---------|
 | Hermes Agent | Agent runtime, skill orchestration, chat, and read-only cron scheduling |
-| social-cli | Meta API interface for reporting workflows |
+| meta-ads CLI | Meta Ads reporting interface for read-only insights and approved actions |
 | Meta Marketing API | Ad data, Graph API uploads, Pixel, and Conversions API |
 
 ## Boundaries

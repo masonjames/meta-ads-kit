@@ -8,25 +8,19 @@
 # Events appear in Events Manager > Data Sources > [Pixel] > Test Events
 # test_event_code prevents test events from affecting real data
 #
-# Requires: META_TOKEN env var or ~/.social-cli/config.json with meta_access_token
+# Requires: ACCESS_TOKEN env var
 
 set -euo pipefail
 
 API_BASE="https://graph.facebook.com/v19.0"
 
 get_token() {
-  if [[ -n "${META_TOKEN:-}" ]]; then
-    echo "$META_TOKEN"
+  if [[ -n "${ACCESS_TOKEN:-}" ]]; then
+    echo "$ACCESS_TOKEN"
     return
   fi
-  local config="$HOME/.social-cli/config.json"
-  if [[ -f "$config" ]]; then
-    local tok
-    tok=$(jq -r '.meta_access_token // .access_token // empty' "$config" 2>/dev/null || true)
-    [[ -n "$tok" ]] && echo "$tok" && return
-  fi
-  echo "ERROR: META_TOKEN not set and not found in ~/.social-cli/config.json" >&2
-  echo "Set it: export META_TOKEN=your_token" >&2
+  echo "ERROR: ACCESS_TOKEN not set" >&2
+  echo "Set it: export ACCESS_TOKEN=your_token" >&2
   exit 1
 }
 
@@ -169,7 +163,7 @@ elif [[ -n "$PU_ERROR" ]]; then
   fi
   if echo "$PU_ERROR" | grep -qi "token"; then
     echo ""
-    echo "  HINT: Check your META_TOKEN is valid and not expired."
+    echo "  HINT: Check your ACCESS_TOKEN is valid and not expired."
     echo "  Business Manager > System Users > Generate New Token"
   fi
   if echo "$PU_ERROR" | grep -qi "pixel"; then
@@ -204,7 +198,7 @@ else
   echo "  FAILED -- No events received. Check errors above."
   echo ""
   echo "  Common fixes:"
-  echo "  1. Verify META_TOKEN has 'ads_management' permission"
+  echo "  1. Verify ACCESS_TOKEN has 'ads_management' permission"
   echo "  2. Verify pixel ID is correct: $PIXEL_ID"
   echo "  3. Check token is not expired"
   echo "  4. Verify pixel is associated with your Business Manager"

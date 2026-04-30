@@ -11,8 +11,7 @@
 #   ./run.sh recommend             # Budget shift recommendations
 #
 # Options:
-#   --account act_123              # Override ad account
-#   --preset last_30d              # Date range (last_7d, last_30d, etc.)
+#   --date-preset last_30d         # Date range (today, last_7d, last_30d, etc.)
 
 set -euo pipefail
 
@@ -68,8 +67,7 @@ case "$MODE" in
     echo "  track-ad ID    Track specific ad over time"
     echo ""
     echo "Options:"
-    echo "  --account act_123    Override ad account"
-    echo "  --preset last_30d    Date range"
+    echo "  --date-preset last_30d    Date range"
     echo ""
     echo "Quick start: ./run.sh daily-check"
     ;;
