@@ -6,8 +6,8 @@ A standalone multi-file **Hermes Agent** skill pack for Meta ads monitoring, cre
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Hermes Agent](https://img.shields.io/badge/Works%20with-Hermes%20Agent-blue)](https://github.com/NOETIC-AGI/hermes-agent)
-[![Meta Ads AI Connector - MCP](https://www.facebook.com/business/help/1456422242197840)]
-[![Meta Ads CLI](https://developers.facebook.com/documentation/ads-commerce/ads-ai-connectors/ads-cli/setup/get-started)]
+[Meta Ads AI Connector MCP](https://www.facebook.com/business/help/1456422242197840) · [Meta Ads CLI](https://developers.facebook.com/documentation/ads-commerce/ads-ai-connectors/ads-cli/setup/get-started)
+
 ---
 
 **Monitor → Detect Fatigue → Find Winners → Shift Budget → Generate Copy → Upload to Meta → Repeat**
@@ -65,6 +65,14 @@ hermes skills list
 ```
 
 You should see all six Meta Ads skills: `meta-ads`, `ad-creative-monitor`, `budget-optimizer`, `ad-copy-generator`, `ad-upload`, and `pixel-capi`.
+
+```bash
+# Optional: install a local OS cron job for daily read-only data pulls at 08:00
+scripts/install-cron.sh --show
+scripts/install-cron.sh --install --time 08:00 --command daily-check
+```
+
+The OS cron helper only runs `./run.sh` and writes logs to `~/.cache/meta-ads-kit/logs/`. Use Hermes cron instead when you want an agent-authored briefing delivered to Telegram, Slack, or another Hermes channel.
 
 ---
 
@@ -138,9 +146,28 @@ Hermes handles orchestration and must ask before any spend-affecting or attribut
 
 ## Automation
 
-Hermes cron is for read-only briefings only. A cron run is headless and cannot collect approval, so it must never pause ads, change budgets, upload creatives, send production CAPI events, or change tracking configuration.
+There are two safe automation modes:
 
-Use [SETUP.md](SETUP.md) for the full cron command. At minimum, point `--workdir` at this repo and include the reporting skills:
+1. **Local OS cron (`scripts/install-cron.sh`)** — recommended when you want `./run.sh` to pull daily read-only data and keep a local log available at `~/.cache/meta-ads-kit/logs/`.
+2. **Hermes cron (`hermes cron create`)** — recommended when you want Hermes to synthesize and deliver an agent-authored briefing to a chat/channel.
+
+Both modes are read-only. Headless scheduled jobs cannot collect approval, so they must never pause ads, change budgets, upload creatives, send production CAPI events, or change tracking configuration.
+
+Install the local OS cron daily at 08:00:
+
+```bash
+scripts/install-cron.sh --show
+scripts/install-cron.sh --install --time 08:00 --command daily-check
+```
+
+Manage it later:
+
+```bash
+scripts/install-cron.sh --show
+scripts/install-cron.sh --remove
+```
+
+Use [SETUP.md](SETUP.md) for the full Hermes cron command. At minimum, point `--workdir` at this repo and include the reporting skills:
 
 ```bash
 hermes cron create "0 8 * * *" \
@@ -186,12 +213,6 @@ Your Meta ad spend is separate — this kit just helps you manage it smarter.
 - `SPEC.md` — full system spec
 - `run.sh` — local report runner
 - `skills/` — six Hermes skill directories with their bundled scripts/references
-
----
-
-## Contributing
-
-PRs welcome. Useful directions include Google Ads support, creative performance dashboards, automated A/B test analysis, multi-account agency mode, and Slack/Discord notification integrations.
 
 ---
 

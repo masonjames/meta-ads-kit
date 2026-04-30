@@ -3,5 +3,6 @@ ad-config.json
 workspace/
 memory/
 output/
+.meta-ads-kit/
 node_modules/
 .DS_Store

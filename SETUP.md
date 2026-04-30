@@ -6,15 +6,15 @@ Get your Hermes-powered AI ad manager running in 10 minutes.
 
 ## Step 1: Install and Verify `meta-ads`
 
-This kit uses the installed `meta-ads` CLI for Meta Ads or Meta Ads MCP for reporting. Docs prefer the `meta-ads` command, not any symlink.
+This kit can use the installed `meta-ads` CLI for local reporting and the Meta Ads MCP server for agent-native integrations. Docs and scripts prefer the `meta-ads` command, not any local symlink.
 
-For MCP use the followiing URL for ads MCP server across all currently supported AI agents is:
+For MCP, use the following Ads MCP server URL across supported AI agents:
 
 https://mcp.facebook.com/ads
 
-You should be prompted to log into facebook ads with your uer credentials. See Facebook information here: https://www.facebook.com/business/help/1456422242197840
+You should be prompted to log into Facebook Ads with your user credentials. See Facebook's information here: https://www.facebook.com/business/help/1456422242197840
 
-For the meta ads CLI, refer to thee documentation here: https://developers.facebook.com/documentation/ads-commerce/ads-ai-connectors/ads-cli/setup/get-started
+For the Meta Ads CLI, refer to the documentation here: https://developers.facebook.com/documentation/ads-commerce/ads-ai-connectors/ads-cli/setup/get-started
 
 ```bash
 meta-ads auth status
@@ -161,7 +161,35 @@ Hermes should ask before pausing ads, changing budgets, uploading ads, sending p
 
 ## Step 8: Automate Read-Only Morning Briefings
 
-Hermes cron is for headless reports and recommendations only. It cannot collect approvals, so do not use cron for pausing ads, changing budgets, uploading creatives, or production tracking changes.
+Scheduled jobs are for reports and recommendations only. Headless jobs cannot collect approvals, so do not use cron for pausing ads, changing budgets, uploading creatives, sending production CAPI events, or changing tracking configuration.
+
+### Option A — Local OS cron for daily `run.sh` data pulls
+
+This is the recommended lightweight option when you want daily data and logs to always be available on the machine. It runs `./run.sh daily-check` at 08:00 local time and writes logs to `~/.cache/meta-ads-kit/logs/`.
+
+```bash
+# Preview without changing crontab
+scripts/install-cron.sh --show
+
+# Install/update the daily job
+scripts/install-cron.sh --install --time 08:00 --command daily-check
+
+# Inspect or remove later
+scripts/install-cron.sh --show
+scripts/install-cron.sh --remove
+```
+
+You can choose another read-only command, for example:
+
+```bash
+scripts/install-cron.sh --install --time 07:30 --command overview
+```
+
+The installer uses begin/end markers in your crontab so rerunning it updates the existing Meta Ads Kit entry instead of duplicating it.
+
+### Option B — Hermes cron for agent-authored briefings
+
+Use Hermes cron when you want Hermes to synthesize the report and deliver it to a configured channel. Keep `--workdir` pointed at this repo so cron can access project context and memory paths.
 
 ```bash
 hermes cron create "0 8 * * *" \
@@ -172,7 +200,7 @@ hermes cron create "0 8 * * *" \
   --deliver telegram
 ```
 
-Use your preferred delivery target for `--deliver`. Keep `--workdir` pointed at this repo so cron can access project context and memory paths.
+Use your preferred delivery target for `--deliver`.
 
 ---
 
@@ -187,8 +215,9 @@ Use your preferred delivery target for `--deliver`. Keep `--workdir` pointed at 
 | Rate limited | Wait a few minutes and retry |
 | Hermes skill not listed | Copy the full directory from `skills/<skill-name>/` into your Hermes skills path, then rerun `hermes skills list` |
 | Script/reference not found | Reinstall by copying the full skill folder, not just `SKILL.md` |
-| Cron cannot find repo files | Add `--workdir /path/to/meta-ads-kit` to the cron job |
-| Cron does not run automatically | Confirm the Hermes gateway/cron service is running in your Hermes environment |
+| Cron cannot find repo files | For OS cron, use `scripts/install-cron.sh --install` from the repo root. For Hermes cron, add `--workdir /path/to/meta-ads-kit` |
+| OS cron does not run | Check `crontab -l`, macOS cron permissions, and `~/.cache/meta-ads-kit/logs/` |
+| Hermes cron does not run automatically | Confirm the Hermes gateway/cron service is running in your Hermes environment |
 | Missing Graph API token | Set `ACCESS_TOKEN` for upload, copy lookup, and Pixel/CAPI workflows |
 
 ### Check Everything

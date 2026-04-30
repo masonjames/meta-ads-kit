@@ -16,6 +16,17 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# Load optional repo-local environment without printing secrets. This lets local
+# runs and OS cron use the same ACCESS_TOKEN, AD_ACCOUNT_ID, BUSINESS_ID, and
+# META_ADS_CLI settings documented in .env.example.
+if [[ -f "$SCRIPT_DIR/.env" ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "$SCRIPT_DIR/.env"
+  set +a
+fi
+
 MODE="${1:-daily-check}"
 
 # Route to the right skill script
