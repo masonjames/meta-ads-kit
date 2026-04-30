@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Setup help
+    url: https://github.com/masonjames/meta-ads-kit/blob/main/SETUP.md
+    about: Read the setup guide and run scripts/doctor.sh before opening an issue.
+  - name: Security report
+    url: https://github.com/masonjames/meta-ads-kit/security/policy
+    about: Please do not report security or credential issues in public issues.

@@ -1,0 +1,36 @@
+name: Feature Request
+description: Suggest an improvement for the skill pack, scripts, or docs
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or workflow
+      description: What are you trying to do with Meta Ads Copilot?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the change you want.
+    validations:
+      required: true
+  - type: dropdown
+    id: safety
+    attributes:
+      label: Does this involve spend-affecting or attribution-affecting actions?
+      options:
+        - No, read-only/reporting only
+        - Yes, but only with explicit interactive approval
+        - Yes, and I am not sure how to gate it safely
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Optional context, prior art, or links.
+    validations:
+      required: false

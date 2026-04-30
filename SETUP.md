@@ -4,6 +4,42 @@ Get your Hermes-powered AI ad manager running in 10 minutes.
 
 ---
 
+## First-Time Setup Path
+
+If you are installing both Hermes and this kit for the first time, use this order:
+
+1. Install Hermes Agent and run its first-time setup.
+2. Install/authenticate the official Meta Ads CLI from Meta's docs.
+3. Clone this repo and copy `.env.example` / `ad-config.example.json`.
+4. Run `scripts/install-hermes-skills.sh` to copy the full multi-file skill directories into Hermes.
+5. Run `scripts/doctor.sh` to verify commands, credentials, ad account access, installed skills, and shell syntax.
+6. Run `./run.sh daily-check` locally before adding automation.
+
+```bash
+# 1) Hermes Agent
+pip install hermes-agent
+hermes setup
+
+# 2) Meta Ads CLI: follow Meta's current CLI docs, then verify
+meta-ads auth status
+meta-ads -o json ads adaccount list
+
+# 3) This kit
+git clone https://github.com/themattberman/meta-ads-kit.git
+cd meta-ads-kit
+cp .env.example .env
+cp ad-config.example.json ad-config.json
+
+# 4) Install skills + 5) verify
+scripts/install-hermes-skills.sh
+scripts/doctor.sh
+
+# 6) Smoke test
+./run.sh daily-check
+```
+
+---
+
 ## Step 1: Install and Verify `meta-ads`
 
 This kit can use the installed `meta-ads` CLI for local reporting and the Meta Ads MCP server for agent-native integrations. Docs and scripts prefer the `meta-ads` command, not any local symlink.
@@ -112,12 +148,11 @@ Install Hermes Agent if needed, then copy each complete skill directory into a H
 pip install hermes-agent
 hermes setup
 
-# From the meta-ads-kit repo root
-mkdir -p ~/.hermes/skills/marketing
-cp -R skills/* ~/.hermes/skills/marketing/
+# From the meta-ads-kit repo root, install/update all bundled skills
+scripts/install-hermes-skills.sh
 
-# Confirm Hermes can see all six skills
-hermes skills list
+# Confirm commands, credentials, ad account access, installed skills, and shell syntax
+scripts/doctor.sh
 ```
 
 Confirm these skills are listed:
@@ -223,13 +258,19 @@ Use your preferred delivery target for `--deliver`.
 ### Check Everything
 
 ```bash
+scripts/doctor.sh
+```
+
+For manual checks, run:
+
+```bash
 meta-ads auth status
 meta-ads -o json ads adaccount list
 meta-ads -o json ads campaign list
 hermes skills list
 ```
 
-This checks `meta-ads` configuration and confirms Hermes can see the installed skill pack.
+`doctor.sh` is read-only. It checks required commands, local `.env` presence, Meta Ads CLI authentication, ad account access, installed Hermes skills, and shell syntax.
 
 ---
 

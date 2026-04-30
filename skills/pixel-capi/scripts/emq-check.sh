@@ -22,7 +22,7 @@ get_token() {
     return
   fi
   echo "ERROR: ACCESS_TOKEN not set" >&2
-  echo "Set it: export ACCESS_TOKEN=your_token" >&2
+  echo "Set it: export ACCESS_TOKEN=YOUR_TOKEN" >&2
   exit 1
 }
 
@@ -32,7 +32,7 @@ if [[ $# -lt 1 ]]; then
 fi
 
 PIXEL_ID="$1"
-TOKEN=$(get_token)
+TOKEN="$(get_token)"
 
 echo ""
 echo "========================================"

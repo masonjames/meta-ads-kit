@@ -1,0 +1,54 @@
+name: Bug Report
+description: Report a bug in the Hermes skill pack, scripts, or setup docs
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please run `scripts/doctor.sh` first when possible.
+        Do not paste tokens, account-private data, or raw API responses containing sensitive information.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the bug and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Run `...`
+        2. Ask Hermes `...`
+        3. See error `...`
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Relevant `scripts/doctor.sh` output
+      description: Redact secrets and account-private data before pasting.
+      render: text
+    validations:
+      required: false
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Hermes skill installation
+        - Meta Ads CLI reporting
+        - Cron automation
+        - Pixel/CAPI scripts
+        - Ad copy/upload workflow
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: "macOS 14, Hermes version, shell, meta-ads CLI version"

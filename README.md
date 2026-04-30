@@ -40,31 +40,23 @@ You don't need to stare at Ads Manager to spot these patterns. An AI agent can d
 For complete setup, see [SETUP.md](SETUP.md). The short version:
 
 ```bash
-git clone https://github.com/themattberman/meta-ads-kit.git
+git clone https://github.com/masonjames/meta-ads-kit.git
 cd meta-ads-kit
-
-# Verify the installed Meta Ads CLI and choose an ad account
-meta-ads auth status
-meta-ads -o json ads adaccount list
 
 # Create local config files
 cp .env.example .env
 cp ad-config.example.json ad-config.json
+
+# Install the full Hermes skill directories, including scripts/ and references/
+scripts/install-hermes-skills.sh
+
+# Run a read-only setup check
+scripts/doctor.sh
 ```
 
-Edit `.env` with `ACCESS_TOKEN`, `AD_ACCOUNT_ID`, optional `BUSINESS_ID`, and optional `META_ADS_CLI`. Edit `ad-config.json` with your account benchmarks.
+If `scripts/doctor.sh` reports that `meta-ads` is missing, install and authenticate the official Meta Ads CLI first. Then edit `.env` with `ACCESS_TOKEN`, `AD_ACCOUNT_ID`, optional `BUSINESS_ID`, and optional `META_ADS_CLI`.
 
-Install Hermes Agent if needed, then copy the **full skill directories** so bundled `scripts/` and `references/` files come along:
-
-```bash
-pip install hermes-agent
-hermes setup
-mkdir -p ~/.hermes/skills/marketing
-cp -R skills/* ~/.hermes/skills/marketing/
-hermes skills list
-```
-
-You should see all six Meta Ads skills: `meta-ads`, `ad-creative-monitor`, `budget-optimizer`, `ad-copy-generator`, `ad-upload`, and `pixel-capi`.
+Edit `ad-config.json` with your account benchmarks. Hermes should list all six skills: `meta-ads`, `ad-creative-monitor`, `budget-optimizer`, `ad-copy-generator`, `ad-upload`, and `pixel-capi`.
 
 ```bash
 # Optional: install a local OS cron job for daily read-only data pulls at 08:00
@@ -212,6 +204,9 @@ Your Meta ad spend is separate — this kit just helps you manage it smarter.
 - `SOUL.md` — project persona/context for Hermes sessions
 - `SPEC.md` — full system spec
 - `run.sh` — local report runner
+- `scripts/install-hermes-skills.sh` — copies all bundled skills into `~/.hermes/skills/marketing/`
+- `scripts/doctor.sh` — read-only first-run setup checker
+- `scripts/install-cron.sh` — installs/removes the optional daily OS cron report
 - `skills/` — six Hermes skill directories with their bundled scripts/references
 
 ---

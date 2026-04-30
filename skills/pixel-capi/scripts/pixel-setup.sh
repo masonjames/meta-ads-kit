@@ -18,8 +18,16 @@ get_token() {
     return
   fi
   echo "ERROR: ACCESS_TOKEN not set" >&2
-  echo "Set it: export ACCESS_TOKEN=your_token" >&2
+  echo "Set it: export ACCESS_TOKEN=YOUR_TOKEN" >&2
   exit 1
+}
+
+sha256_value() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum | cut -d' ' -f1
+  else
+    shasum -a 256 | cut -d' ' -f1
+  fi
 }
 
 if [[ $# -lt 2 ]]; then
@@ -28,9 +36,9 @@ if [[ $# -lt 2 ]]; then
   exit 1
 fi
 
-PLATFORM="${1,,}"
+PLATFORM="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')"
 PIXEL_ID="$2"
-TOKEN=$(get_token)
+TOKEN="$(get_token)"
 
 # Fetch pixel name for display
 PIXEL_NAME=$(curl -sf \
@@ -695,8 +703,8 @@ STEP 3 -- Server-side CAPI endpoint (bash/curl example)
           "event_source_url": "https://yoursite.com/thank-you",
           "action_source": "website",
           "user_data": {
-            "em": "'"\$(echo -n 'user@example.com' | sha256sum | cut -d' ' -f1)"'",
-            "ph": "'"\$(echo -n '15551234567' | sha256sum | cut -d' ' -f1)"'",
+            "em": "'"\$(echo -n 'user@example.com' | sha256_value)"'",
+            "ph": "'"\$(echo -n '15551234567' | sha256_value)"'",
             "client_ip_address": "USER_IP",
             "client_user_agent": "USER_AGENT",
             "fbp": "fb.1.1234567890.987654321",
@@ -711,13 +719,13 @@ STEP 3 -- Server-side CAPI endpoint (bash/curl example)
 
 STEP 4 -- Hashing reference (SHA-256)
 
-  Email:     echo -n "user@example.com" | sha256sum | cut -d' ' -f1
-  Phone:     echo -n "15551234567" | sha256sum | cut -d' ' -f1   # digits only, with country code
-  Name:      echo -n "john" | sha256sum | cut -d' ' -f1           # lowercase, trimmed
-  City:      echo -n "new york" | sha256sum | cut -d' ' -f1       # lowercase
-  State:     echo -n "ny" | sha256sum | cut -d' ' -f1             # 2-letter, lowercase
-  ZIP:       echo -n "10001" | sha256sum | cut -d' ' -f1          # digits only
-  Country:   echo -n "us" | sha256sum | cut -d' ' -f1             # 2-letter ISO, lowercase
+  Email:     echo -n "user@example.com" | sha256_value
+  Phone:     echo -n "15551234567" | sha256_value   # digits only, with country code
+  Name:      echo -n "john" | sha256_value           # lowercase, trimmed
+  City:      echo -n "new york" | sha256_value       # lowercase
+  State:     echo -n "ny" | sha256_value             # 2-letter, lowercase
+  ZIP:       echo -n "10001" | sha256_value          # digits only
+  Country:   echo -n "us" | sha256_value             # 2-letter ISO, lowercase
 
 EOF
   print_dedup_note

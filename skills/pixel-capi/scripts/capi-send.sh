@@ -39,15 +39,23 @@ get_token() {
     return
   fi
   echo "ERROR: ACCESS_TOKEN not set" >&2
-  echo "Set it: export ACCESS_TOKEN=your_token" >&2
+  echo "Set it: export ACCESS_TOKEN=YOUR_TOKEN" >&2
   exit 1
+}
+
+sha256_value() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum | cut -d' ' -f1
+  else
+    shasum -a 256 | cut -d' ' -f1
+  fi
 }
 
 hash_value() {
   local val="$1"
   # Lowercase, trim whitespace, then SHA-256
   echo -n "$(echo "$val" | tr '[:upper:]' '[:lower:]' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')" | \
-    sha256sum | cut -d' ' -f1
+    sha256_value
 }
 
 hash_phone() {
@@ -55,12 +63,15 @@ hash_phone() {
   # Remove non-digits, then hash
   local digits
   digits=$(echo "$val" | tr -dc '0-9')
-  echo -n "$digits" | sha256sum | cut -d' ' -f1
+  echo -n "$digits" | sha256_value
 }
 
 gen_event_id() {
-  # Generate unique event ID
-  echo "evt_$(date +%s)_$(cat /dev/urandom | tr -dc 'a-z0-9' | head -c 10 2>/dev/null || date +%N | tail -c 10)"
+  # Generate unique event ID. LC_ALL=C avoids macOS tr "Illegal byte sequence" on random bytes.
+  local rand
+  rand="$(LC_ALL=C tr -dc 'a-z0-9' </dev/urandom | head -c 10 2>/dev/null || true)"
+  [[ -n "$rand" ]] || rand="$(date +%s)$$"
+  echo "evt_$(date +%s)_$rand"
 }
 
 # ---- Args ----
@@ -74,7 +85,7 @@ PIXEL_ID="$1"
 EVENT_NAME="$2"
 shift 2
 
-TOKEN=$(get_token)
+TOKEN="$(get_token)"
 
 # Defaults
 EMAIL="" PHONE="" FIRST_NAME="" LAST_NAME=""
@@ -175,7 +186,7 @@ fi
 if [[ -n "$ZIP" ]]; then
   # ZIP: digits only
   ZIP_DIGITS=$(echo "$ZIP" | tr -dc '0-9')
-  HASH=$(echo -n "$ZIP_DIGITS" | sha256sum | cut -d' ' -f1)
+  HASH=$(echo -n "$ZIP_DIGITS" | sha256_value)
   USER_DATA=$(echo "$USER_DATA" | jq --arg v "$HASH" '. + {zp: $v}')
   echo "  ZIP: hashed"
 fi

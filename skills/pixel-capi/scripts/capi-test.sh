@@ -20,8 +20,16 @@ get_token() {
     return
   fi
   echo "ERROR: ACCESS_TOKEN not set" >&2
-  echo "Set it: export ACCESS_TOKEN=your_token" >&2
+  echo "Set it: export ACCESS_TOKEN=YOUR_TOKEN" >&2
   exit 1
+}
+
+sha256_value() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum | cut -d' ' -f1
+  else
+    shasum -a 256 | cut -d' ' -f1
+  fi
 }
 
 if [[ $# -lt 1 ]]; then
@@ -31,15 +39,16 @@ fi
 
 PIXEL_ID="$1"
 TEST_CODE="${2:-TEST$(date +%s | tail -c 6)}"
-TOKEN=$(get_token)
+TOKEN="$(get_token)"
 
 NOW=$(date +%s)
-RAND=$(cat /dev/urandom | tr -dc 'a-z0-9' | head -c 8 2>/dev/null || echo "$(date +%s%N | tail -c 8)")
+RAND=$(LC_ALL=C tr -dc 'a-z0-9' </dev/urandom | head -c 8 2>/dev/null || true)
+[[ -n "$RAND" ]] || RAND="$(date +%s)$$"
 
 # Test user data (fake, but properly hashed)
 # Using test values: test@example.com, 15555550100
-TEST_EMAIL_HASH="$(echo -n 'test@example.com' | sha256sum | cut -d' ' -f1)"
-TEST_PHONE_HASH="$(echo -n '15555550100' | sha256sum | cut -d' ' -f1)"
+TEST_EMAIL_HASH="$(echo -n 'test@example.com' | sha256_value)"
+TEST_PHONE_HASH="$(echo -n '15555550100' | sha256_value)"
 
 echo ""
 echo "========================================"
