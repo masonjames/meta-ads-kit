@@ -64,7 +64,7 @@ cp -R skills/* ~/.hermes/skills/marketing/
 hermes skills list
 ```
 
-You should see all six Meta Ads Copilot skills: `meta-ads`, `ad-creative-monitor`, `budget-optimizer`, `ad-copy-generator`, `ad-upload`, and `pixel-capi`.
+You should see all six Meta Ads skills: `meta-ads`, `ad-creative-monitor`, `budget-optimizer`, `ad-copy-generator`, `ad-upload`, and `pixel-capi`.
 
 ---
 
